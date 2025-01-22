@@ -1,0 +1,211 @@
+
+/* we can use webcss variables, fabric compiles that to gtk css.
+   global variables can be stored in :vars */
+
+:vars {
+    --background: #232634;
+    --foreground: #c6d0f5;
+    --color0: #f2d5cf;
+    --color1: #eebebe;
+    --color2: #f4b8e4;
+    --color3: #ca9ee6;
+    --color4: #e78284;
+    --color5: #ea999c;
+    --color6: #ef9f76;
+    --color7: #e5c890;
+    --color8: #a6d189;
+    --color9: #81c8be;
+    --color10: #99d1db;
+    --color11: #85c1dc;
+    --color12: #8caaee;
+    --color13: #babbf1;
+    --color14: #737994;
+    --color15: #414559;
+    --window-bg: alpha(var(--background), 0.6);
+    --module-bg: alpha(var(--background), 0.4);
+    --border-color: var(--color14);
+    --ws-active: var(--color13);
+    --ws-inactive: var(--color14);
+    --ws-empty: var(--color15);
+    --ws-hover: var(--color12);
+    --ws-urgent: var(--color4);
+}
+/* unset so we can style everything from the ground up. */
+* {
+    all: unset;
+    color: var(--text);
+    font-size: 14px;
+    font-family: "JetBrainsMono Nerd Font", sans-serif;
+    border-radius: 100px;
+}
+
+
+button {
+    background-size: 400% 400%;
+}
+
+#bar-inner {
+    padding: 4px;
+    border: solid 2px;
+    border-color: var(--border-color);
+    background-color: var(--window-bg);
+    min-height: 28px;
+}
+
+#workspaces {
+    padding: 6px;
+    min-width: 0px;
+    background-color: var(--module-bg);
+}
+
+#workspaces>button {
+    padding: 0px 8px;
+    transition: padding 0.05s steps(8);
+    background-color: var(--ws-inactive);
+}
+
+#workspaces>button>label {
+    font-size: 0px;
+}
+
+#workspaces>button:hover {
+    background-color: var(--ws-hover);
+}
+
+#workspaces>button.urgent {
+    background-color: var(--ws-urgent);
+}
+
+#workspaces>button.active {
+    padding: 0px 32px;
+    background-color: var(--ws-active);
+}
+
+#workspaces>button.empty {
+    background-color: var(--ws-empty);
+}
+
+
+#date-time,
+#hyprland-language,
+#hyprland-window {
+    background-color: var(--module-bg);
+    padding: 0px 8px;
+}
+
+menu>menuitem>label,
+#date-time>label,
+#hyprland-window>label {
+    font-weight: 900;
+}
+
+/* system tray */
+#system-tray {
+    padding: 2px 4px;
+    background-color: var(--module-bg);
+}
+
+/* menu and menu items (written for the system tray) */
+menu {
+    border: solid 2px;
+    border-radius: 10px;
+    border-color: var(--border-color);
+    background-color: var(--window-bg);
+}
+
+menu>menuitem {
+    border-radius: 0px;
+    background-color: var(--module-bg);
+    padding: 6px;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+menu>menuitem:first-child {
+    margin-top: 1px;
+    border-radius: 8px 8px 0px 0px;
+}
+
+menu>menuitem:last-child {
+    margin-bottom: 1px;
+    border-radius: 0px 0px 8px 8px;
+}
+
+menu>menuitem:hover {
+    background-color: var(--border-color);
+}
+
+
+#volume-progress-bar {
+    color: transparent;
+    background-color: transparent;
+    border: solid 0px var(--color4);
+}
+
+
+#cpu-progress-bar {
+    color: transparent;
+    background-color: transparent;
+    border: solid 0px var(--color3);
+}
+
+#ram-progress-bar {
+    color: transparent;
+    background-color: transparent;
+    border: solid 0px var(--color2);
+}
+
+#battery-progress-bar {
+    color: transparent;
+    background-color: transparent;
+    border: solid 0px var(--color11);
+}
+
+#widgets-container {
+    background-color: var(--module-bg);
+    padding: 2px;
+}
+
+
+
+tooltip {
+    border: solid 2px;
+    border-color: var(--border-color);
+    background-color: var(--window-bg);
+}
+
+tooltip>* {
+    padding: 2px 4px
+}
+
+#profile-pic {
+    background-color: alpha(var(--color11), 0.2);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 6px;
+    padding: 32px;
+    margin: 4px;
+}
+
+#window-inner {
+    border: solid 2px;
+    border-color: var(--color11);
+    background-color: var(--window-bg);
+    border-radius: 100px;
+    border-radius: 12px;
+    padding: 10px;
+}
+
+#progress-bar-sep {
+    padding: 4px;
+    margin: 16px 0px;
+    border-radius: 100px;
+    background-color: var(--module-bg);
+}
+
+#progress-bar-container {
+    background-color: var(--module-bg);
+    border-radius: 100px;
+    padding: 8px;
+}

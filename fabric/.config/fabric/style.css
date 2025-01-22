@@ -1,0 +1,154 @@
+
+@import url("./catppuccin_frappe.css");
+
+/* Common variables */
+:vars {
+    --module-bg: alpha(@crust, 0.7);
+    --bg: alpha(@crust, 0.5);
+}
+
+* {
+    all: unset;
+    color: var(--text);
+    font-size: 14px;
+    font-family: "Agave Nerd Font", sans-serif;
+    border-radius: 100px;
+}
+
+button {
+    background-size: 400% 400%;
+}
+
+/* Bar items */
+#bar-item-misc, #date-time, #hyprland-window {
+    background-color: var(--module-bg);
+    padding: 0px 8px;
+}
+
+#bar-inner {
+    padding: 4px;
+    border: solid 2px @subtext0;
+    background-color: var(--bg);
+    min-height: 28px;
+}
+
+/* Workspaces */
+#workspaces {
+    padding: 6px;
+    min-width: 0px;
+    background-color: var(--module-bg);
+}
+
+#workspaces>button {
+    padding: 0px 8px;
+    transition: padding 0.05s steps(8);
+    background-color: @overlay0;
+}
+
+#workspaces>button>label {
+    font-size: 0px;
+}
+
+#workspaces>button:hover {
+    background-color: @blue;
+}
+
+#workspaces>button.urgent {
+    background-color: @red;
+}
+
+#workspaces>button.active {
+    padding: 0px 32px;
+    background-color: @subtext1;
+}
+
+#workspaces>button.empty {
+    background-color: @surface1;
+}
+
+/* Menu and menu items */
+menu {
+    border: solid 2px @overlay0;
+    border-radius: 10px;
+    background-color: var(--module-bg);
+}
+
+menu>menuitem {
+    border-radius: 0px;
+    background-color: var(--module-bg);
+    padding: 6px;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+menu>menuitem:first-child {
+    margin-top: 1px;
+    border-radius: 8px 8px 0px 0px;
+}
+
+menu>menuitem:last-child {
+    margin-bottom: 1px;
+    border-radius: 0px 0px 8px 8px;
+}
+
+menu>menuitem:hover {
+    background-color: @overlay0;
+}
+
+/* System tray */
+#system-tray {
+    padding: 2px 4px;
+    background-color: var(--module-bg);
+}
+
+/* Progress bars */
+#volume-progress-bar, #cpu-progress-bar, #ram-progress-bar, #battery-progress-bar {
+    color: transparent;
+    background-color: transparent;
+    border: solid 0px;
+}
+
+#volume-progress-bar { border-color: @maroon; }
+#cpu-progress-bar { border-color: @red; }
+#ram-progress-bar { border-color: @mauve; }
+#battery-progress-bar { border-color: @sky; }
+
+/* Widgets container */
+#widgets-container {
+    background-color: alpha(@crust, 0.6);
+    padding: 2px;
+}
+
+/* Profile pic */
+#profile-pic {
+    background-color: alpha(@base, 0.2);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 6px;
+    padding: 32px;
+    margin: 4px;
+}
+
+/* Window inner */
+#window-inner {
+    border: solid 2px @subtext1;
+    background-color: var(--bg);
+    border-radius: 12px;
+    padding: 10px;
+}
+
+/* Progress bar separators */
+#progress-bar-sep, #progress-bar-container {
+    background-color: var(--bg);
+    border-radius: 100px;
+}
+
+#progress-bar-sep {
+    padding: 4px;
+    margin: 16px 0px;
+}
+
+#progress-bar-container {
+    padding: 8px;
+}

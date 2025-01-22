@@ -1,0 +1,133 @@
+// define colors etc.
+* {
+    base: #24273a;
+    blue: #8aadf4; 
+    primary: #363a4f; 
+    ug: #494d64; 
+    text: #b4befe;
+
+    font: "Jetbrains Mono Nerd Font 11";
+    background-color: @base;
+    //dark: @base;
+    border: 0px;
+
+    transparent: rgba(46,52,64,0);
+}
+
+// defines different aspects of the window
+window {
+    width: 700;
+    /*since line wont work with height, i comment it out 
+    if you rather control the size via height
+    just comment it out */
+    //height: 500;
+
+    orientation: horizontal;
+    location: center;
+    anchor: center;
+    //transparency: "screenshot";//
+    border-color: #1e1e2e;  
+    border: 0px;
+    border-radius: 7px;
+    spacing: 0;
+    children: [ mainbox ];
+}
+
+mainbox {
+    spacing: 0;
+    children: [ inputbar, message, listview ];
+}
+
+inputbar {
+    color: @text;
+    padding: 11px;
+    border: 3px 3px 2px 3px;
+    border-color: @ug;
+    border-radius: 6px 6px 0px 0px;
+}
+
+message {
+    padding: 0;
+    border-color: @text;
+    border: 0px 1px 1px 1px;
+}
+
+entry, prompt, case-indicator {
+    text-font: inherit;
+    text-color: inherit;
+}
+
+entry {
+    cursor: pointer;
+}
+
+prompt {
+    margin: 0px 5px 0px 0px;
+}
+
+listview {
+    layout: vertical;
+    //spacing: 5px;
+    padding: 8px;
+    lines: 12;
+    columns: 1;
+    border: 0px 3px 3px 3px; 
+    border-radius: 0px 0px 6px 6px;
+    border-color: @ug;
+    dynamic: false;
+}
+
+element {
+    padding: 2px;
+    vertical-align: 1;
+    color: @text;
+    font: inherit;
+}
+
+element-text {
+    background-color: inherit;
+    text-color: inherit;
+}
+
+element selected.normal {
+    color: @base;
+    background-color: @blue;
+}
+
+element normal active {
+    background-color: @blue;
+    color: @base;
+}
+
+element-text, element-icon {
+    background-color: inherit;
+    text-color: inherit;
+}
+
+element normal urgent {
+    background-color: @primary;
+}
+
+element selected active {
+    background: @blue;
+    foreground: @base;
+}
+
+button {
+    padding: 6px;
+    color: @primary;
+    horizonatal-align: 0.5;
+
+    border: 2px 0px 2px 2px;
+    border-radius: 4px 0px 0px 4px;
+    border-color: @primary;
+}
+
+button selected normal {
+    border: 2px 0px 2px 2px;
+    border-color: @primary;
+}
+
+scrollbar {
+    enabled: true;
+} 

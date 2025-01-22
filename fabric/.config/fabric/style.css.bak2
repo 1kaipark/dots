@@ -1,0 +1,170 @@
+@import url("./catppuccin_frappe.css");
+
+* {
+    all: unset;
+    color: var(--text);
+    font-size: 14px;
+    font-family: "JetBrainsMono Nerd Font", sans-serif;
+    border-radius: 100px;
+}
+
+button {
+    background-size: 400% 400%;
+}
+
+#bar-item-misc {
+    background-color: alpha(@crust, 0.7);
+    padding: 0px 8px;
+}
+#date-time {
+    background-color: alpha(@crust, 0.7);
+    padding: 0px 8px;
+}
+#bar-inner {
+    padding: 4px;
+    border: solid 2px;
+    border-color: @subtext0;
+    background-color: alpha(@crust, 0.5);
+    min-height: 28px;
+}
+
+#workspaces {
+    padding: 6px;
+    min-width: 0px;
+    background-color: alpha(@crust, 0.7);
+}
+
+
+#workspaces>button {
+    padding: 0px 8px;
+    transition: padding 0.05s steps(8);
+    background-color: @overlay0;
+}
+
+#workspaces>button>label {
+    font-size: 0px;
+}
+
+#workspaces>button:hover {
+    background-color: @blue;
+}
+
+#workspaces>button.urgent {
+    background-color: @red;
+}
+
+#workspaces>button.active {
+    padding: 0px 32px;
+    background-color: @subtext1;
+}
+
+#workspaces>button.empty {
+    background-color: @surface1;
+}
+
+
+
+#hyprland-window {
+    background-color: alpha(@crust, 0.7);
+    padding: 0px 8px;
+}
+
+
+/* menu and menu items (written for the system tray) */
+menu {
+    border: solid 2px;
+    border-radius: 10px;
+    border-color: @overlay0;
+    background-color: alpha(@crust, 0.7);
+}
+
+menu>menuitem {
+    border-radius: 0px;
+    background-color: alpha(@crust, 0.7);
+    padding: 6px;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+menu>menuitem:first-child {
+    margin-top: 1px;
+    border-radius: 8px 8px 0px 0px;
+}
+
+menu>menuitem:last-child {
+    margin-bottom: 1px;
+    border-radius: 0px 0px 8px 8px;
+}
+
+menu>menuitem:hover {
+    background-color: @overlay0;
+}
+
+#system-tray {
+    padding: 2px 4px;
+    background-color: alpha(@crust, 0.7);
+}
+
+
+#volume-progress-bar {
+    color: transparent;
+    background-color: transparent;
+    border: solid 0px @maroon;
+}
+
+
+#cpu-progress-bar {
+    color: transparent;
+    background-color: transparent;
+    border: solid 0px @red;
+}
+
+#ram-progress-bar {
+    color: transparent;
+    background-color: transparent;
+    border: solid 0px @mauve;
+}
+
+#battery-progress-bar {
+    color: transparent;
+    background-color: transparent;
+    border: solid 0px @sky;
+}
+
+#widgets-container {
+    background-color: alpha(@crust, 0.6);
+    padding: 2px;
+}
+
+
+#profile-pic {
+    background-color: alpha(@base, 0.2);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 6px;
+    padding: 32px;
+    margin: 4px;
+}
+
+#window-inner {
+    border: solid 2px;
+    border-color: @subtext1;
+    background-color: alpha(@crust, 0.5);
+    border-radius: 100px;
+    border-radius: 12px;
+    padding: 10px;
+}
+
+#progress-bar-sep {
+    padding: 4px;
+    margin: 16px 0px;
+    border-radius: 100px;
+    background-color: alpha(@crust, 0.5);
+}
+
+#progress-bar-container {
+    background-color: alpha(@crust, 0.5);
+    border-radius: 100px;
+    padding: 8px;
+}
