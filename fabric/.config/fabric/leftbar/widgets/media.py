@@ -33,7 +33,7 @@ class NowPlaying(Box):
             independent_repeat=True,
             refresh_rate=500,
             separator=" | ",
-            name="label-d",
+            name="label-e",
         )
 
 

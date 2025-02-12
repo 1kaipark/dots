@@ -38,7 +38,6 @@ box {
     background-repeat: no-repeat;
     background-size: cover;
     min-height: 150px;
-    min-width: 90px;
     margin: 8px 0px 0px 0px;
     border-radius: 30px;
 }
@@ -57,12 +56,12 @@ box {
 }
 
 #clock-a label {
-    font-size: 48px;
+    font-size: 44px;
     font-family: "Iosevka Nerd Font", bold;
 }
 
 #clock-b label {
-    font-size: 36px;
+    font-size: 32px;
     color: @subtext0;
     font-family: "Iosevka Nerd Font", sans-serif;
 }
@@ -128,6 +127,14 @@ box {
     color: @rosewater;
 }
 
+#label-d {
+    color: @peach;
+}
+
+#label-e {
+    color: @maroon;
+}
+
 #scale-a scale trough highlight {
 	all: unset;
     background-color: @peach;
@@ -183,9 +190,15 @@ box {
 }
 
 #power-menu {
-  padding-right: 2.0rem;
+    padding-right: 2.0rem;
 }
 
 #cpu-temp {
-  font-size: 18px;
+    font-size: 18px;
+}
+
+#separator {
+    font-size: 48px;
+    margin: 0;
+    color: @base;
 }

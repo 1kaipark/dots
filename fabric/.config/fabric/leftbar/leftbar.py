@@ -21,6 +21,9 @@ from loguru import logger
 
 from enum import Enum
 
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
 
 """
 CSS CLASSES
@@ -169,7 +172,7 @@ class CircularIndicator(Box):
         self,
         css_class_bar: str = "",
         css_class_icon: str = "",
-        size: int = 72,
+        size: int = 60,
         icon: str = "",
         **kwargs,
     ) -> None:
@@ -217,9 +220,8 @@ class HWMonitor(Box):
         )
 
         self.add(self.ram_progress_bar)
+        self.add(Separator())
 
-        self.cpu_progress_bar.progress_bar.value = 0.2
-        
         self.cpu_temp_label = Label(label="0°C", name="cpu-temp")
         cpu_temp_box = Box(
             children=[Label(label=Icons.TEMP.value, name="label-red", style="font-size: 36px;"), self.cpu_temp_label]
@@ -336,12 +338,11 @@ class Fetch(Box):
         super().__init__(orientation="v", **kwargs)
 
         self.os_label = Label(name="label-a")
-
         self.uptime_label = Label(name="label-b")
-
         self.pkg_label = Label(name="label-c")
+        self.disk_label = Label(name="label-d")
 
-        for label in [self.os_label, self.uptime_label, self.pkg_label]:
+        for label in [self.os_label, self.uptime_label, self.pkg_label, self.disk_label]:
             self.add(label)
 
         self.update_status()
@@ -354,13 +355,26 @@ class Fetch(Box):
             interval=500,
             poll_from="uptime -p",
             on_changed=lambda f, v: self.uptime_label.set_label(
-                f"up • {v[3:].replace(' hours', 'h').replace(' minutes', 'm').replace(',', '')}"
+                f"up • {v[3:].replace(' hour', 'h').replace(' hours', 'h').replace(' minutes', 'm').replace(',', '')}"
             ),
         )
 
-        pkgs = "1"
-        self.pkg_label.set_label(f"pkgs • {pkgs}")
+        pkgs_fabricator = Fabricator(
+            interval=5000,
+            poll_from=get_relative_path("./scripts/package_count.sh"),
+            on_changed=lambda f, v: self.pkg_label.set_label(f"pkgs • {v}")
+        )
 
+        df_fabricator = Fabricator(
+            interval=5000,
+            poll_from=get_relative_path("./scripts/disk_usage.sh"),
+            on_changed=lambda f, v: self.disk_label.set_label(f"df • {v}")
+        )
+
+class Separator(Label):
+    def __init__(self, wide: bool = False, **kwargs) -> None:
+        delim = "|" if not wide else " | "
+        super().__init__(name="separator", label=delim, **kwargs)
 
 class SidePanel(Window):
     def __init__(self, **kwargs):

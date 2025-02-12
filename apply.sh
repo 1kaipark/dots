@@ -6,4 +6,4 @@ for dir in $(ls); do
 done
 
 rm ~/Pictures/wall 
-ln -s ~/Pictures/catppuccin_frappe_tokyo ~/Pictures/wall
+ln -s ~/Pictures/tokyonight ~/Pictures/wall
