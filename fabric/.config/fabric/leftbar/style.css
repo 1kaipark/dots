@@ -1,0 +1,191 @@
+
+@import url("./catppuccin_frappe.css");
+
+/* Common variables */
+:vars {
+    --module-bg: alpha(@mantle, 0.4);
+    --bg: alpha(@base, 0.3); /* This looks like shit without blur*/
+}
+
+* {
+    all: unset;
+    color: var(--text);
+    font-size: 14px;
+    font-family: "JetBrainsMono Nerd Font", sans-serif;
+}
+
+#window {
+    background-color: var(--bg);
+    padding: 1rem;
+    border: solid 0.2rem @subtext0;
+}
+
+box {
+    padding: 0 5px;
+    min-height: 28px;
+    border-radius: 12px;
+    margin: 0px 2px;
+}
+
+#outer-box {
+    background-color: var(--module-bg);
+    margin: 0 2px;
+}
+
+#profile-pic {
+    background-color: alpha(@base, 0.2);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 150px;
+    min-width: 90px;
+    margin: 8px 0px 0px 0px;
+    border-radius: 30px;
+}
+
+#greeter-label {
+    font-size: 18px;
+}
+
+#button-icon label {
+    background-size: 400% 400%;
+    font-size: 36px;
+    color: @overlay0;
+}
+#button-icon:hover label{
+    color: @red;
+}
+
+#clock-a label {
+    font-size: 48px;
+    font-family: "Iosevka Nerd Font", bold;
+}
+
+#clock-b label {
+    font-size: 36px;
+    color: @subtext0;
+    font-family: "Iosevka Nerd Font", sans-serif;
+}
+
+
+#progress-bar-red {
+    color: transparent;
+    background-color: @crust;
+    border: solid 0px;
+    border-color: @red;
+}
+
+
+#progress-bar-green {
+    color: transparent;
+    background-color: @crust;
+    border: solid 0px;
+    border-color: @green;
+    margin: 10rem;
+}
+
+
+#progress-bar-yellow {
+    color: transparent;
+    background-color: @crust;
+    border: solid 0px;
+    border-color: @yellow;
+}
+
+
+#progress-bar-blue {
+    color: transparent;
+    background-color: @crust;
+    border: solid 0px;
+    border-color: @blue;
+}
+
+#label-green {
+    color: @green;
+}
+
+#label-red {
+    color: @red;
+}
+
+#label-blue {
+    color: @blue;
+}
+
+#label-yellow {
+    color: @yellow;
+}
+
+#label-a {
+    color: @mauve;
+}
+
+#label-b {
+    color: @sapphire;
+}
+
+#label-c {
+    color: @rosewater;
+}
+
+#scale-a scale trough highlight {
+	all: unset;
+    background-color: @peach;
+	border-radius: 8px;
+;
+}
+#scale-a scale trough {
+	all: unset;
+	background-color: @crust;
+	border-radius: 8px;
+	min-height: 12rem;
+	min-width: 1rem;
+	margin : 1rem;
+}
+#scale-a label {
+    color: @peach;
+}
+
+#scale-b scale trough highlight {
+	all: unset;
+    background-color: @red;
+	border-radius: 8px;
+;
+}
+#scale-b scale trough {
+	all: unset;
+	background-color: @crust;
+	border-radius: 8px;
+	min-height: 12rem;
+	min-width: 1rem;
+	margin : 1rem;
+}
+#scale-b label {
+    color: @red;
+}
+
+#media {
+    border: solid 2px @subtext0;
+    min-width: 20rem;
+    margin: 2rem;
+}
+
+#cava-label {
+    color: @sapphire;
+}
+
+#circular-bar {
+    margin: 1rem;
+}
+
+#fetch {
+    padding: 1rem;
+}
+
+#power-menu {
+  padding-right: 2.0rem;
+}
+
+#cpu-temp {
+  font-size: 18px;
+}

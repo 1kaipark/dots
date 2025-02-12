@@ -1,0 +1,112 @@
+@import "catppuccin_frappe.css";
+
+* {
+    border: none;
+    font-size: 14px;
+    font-family: "JetBrainsMono Nerd Font";
+    min-height: 25px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 1px;
+
+    border-radius: 20px;
+}
+
+window#waybar {
+  background: transparent;
+  margin: 5px 5px 5px 5px;
+ }
+
+#custom-logo {
+  padding: 10px 10px;
+}
+
+.modules-right {
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-right: 10px;
+  
+  margin-top: 10px;
+  background: alpha(@crust, 0.9);
+}
+
+.modules-center {
+  margin-top: 10px;
+  background: alpha(@crust, 0.9);
+}
+
+.modules-left {
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-left: 10px;
+  
+  margin-top: 10px;
+  background: alpha(@crust, 0.9);
+}
+
+#battery {
+  background: transparent;
+}
+#custom-clipboard,
+#custom-colorpicker,
+#custom-powerDraw,
+#bluetooth,
+#pulseaudio,
+#network,
+#disk,
+#memory,
+#backlight,
+#cpu,
+#temperature,
+#custom-weather,
+#idle_inhibitor,
+#jack,
+#tray,
+#window,
+#workspaces,
+#clock,
+#pulseaudio {
+}
+
+#temperature.critical,
+#pulseaudio.muted {
+  color: @red;
+  padding-top: 0;
+}
+
+
+#workspaces button {
+    color: @text;
+}
+#workspaces button.active {
+    color: @blue;
+}
+
+#clock{
+    color: @blue;
+}
+
+#battery.charging {
+    color: @green;
+}
+
+#battery.warning:not(.charging) {
+    color: @yellow;
+}
+
+#battery.critical:not(.charging) {
+    color: @red;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+
+@keyframes blink {
+    to {
+        background-color: #ffffff;
+        color: alpha(@crust, 0.9);
+    }
+}

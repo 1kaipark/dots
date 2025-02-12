@@ -1,0 +1,131 @@
+// https://github.com/moktavizen/dotfiles/blob/main/waybar/.config/waybar/config.jsonc
+// -*- mode: jsonc -*-
+{
+  //"layer": "top", // Waybar at top layer
+  "height": 40,
+  "modules-left": ["custom/startpanel", "group/control", "hyprland/window"],
+  "modules-center": ["hyprland/workspaces"],
+  "modules-right": ["tray", "group/hw", "clock", "custom/notification"],
+  // Modules configuratio1
+
+  "hyprland/workspaces": {
+    "all-outputs": true,
+    "format": "{icon}",
+    "format-icons": {
+      "default": "",
+      "active": "",
+    },
+  },
+
+  "hyprland/window": {
+    "format": "{title:.60}",
+  },
+  "tray": {
+    "icon-size": 15,
+    "spacing": 2,
+  },
+  "group/hw": {
+    "orientation": "horizontal",
+    "modules": ["battery", "cpu", "temperature", "memory", "custom/turbo"],
+  },
+  "cpu": {
+    "format": "<span color='#b2ccd6'>󰍛</span> {usage}%",
+    "interval": 2,
+  },
+  "temperature": {
+    "format": "<span color='#f07178'></span> {temperatureC}󰔄",
+    "interval": 2,
+    "on-click": "kitty btop",
+  },
+  "memory": {
+    "format": "<span color='#c792ea'>󰘚</span> {used:.2g}GB",
+    "interval": 2,
+    "on-click": "kitty btop",
+  },
+  "group/control": {
+    "orientation": "horizontal",
+    "modules": ["network", "bluetooth", "pulseaudio", "custom/pacman"],
+  },
+  "battery": {
+    "states": {
+      // "good": 95,
+      "warning": 30,
+      "critical": 15,
+      "interval": 2,
+    },
+    "format": "<span color='#c3e88d'>{icon}</span> {capacity}%",
+    "format-charging": "<span color='#c3e88d'>󱐋</span> {capacity}%",
+    "format-plugged": "<span color='#c3e88d'></span> {capacity}%",
+    "tooltip-format": "{time} left",
+    "format-icons": ["󰁺", "󰁼", "󰁾", "󰂁", "󰁹"],
+  },
+  "network": {
+    "format-ethernet": "<span color='#89ddff'>󰈀</span>{bandwidthDownBytes:=}",
+    "format-wifi": "<span color='#89ddff'>{icon}</span> ",
+    "format-disconnected": "<span color='#89ddff'>󰤭</span>{bandwidthDownBytes:=}",
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "interval": 2,
+    "tooltip-format": "{essid}",
+    "on-click": "nm-applet",
+    "on-click-right": "killall nm-applet",
+  },
+  "bluetooth": {
+    "format": "<span color='#82aaff'></span> {status}",
+    "format-connected-battery": "<span color='#82aaff'></span> {device_battery_percentage}%",
+    "tooltip-format": "{device_alias} {status}",
+    "on-click": "blueman-manager",
+    "on-click-right": "killall blueman-manager",
+  },
+  "pulseaudio": {
+    "format": "<span color='#f78c6c'>{icon}</span> {volume}%",
+    "format-muted": "<span color='#f78c6c'>󰖁</span> {volume}%",
+    "format-bluetooth": "<span color='#f78c6c'>{icon}</span> {volume}%",
+    "format-bluetooth-muted": "<span color='#f78c6c'>󰖁</span> {volume}%",
+    "format-icons": {
+      "headphone": "󰋋",
+      "phone": "󰏲",
+      "portable": "󰏲",
+      "default": ["󰕿", "󰖀", "󰕾"],
+    },
+    "on-click": "pavucontrol",
+  },
+  "clock": {
+    "timezone": "US/Eastern",
+    "format": "<span color='#ffcb6b'>󰥔</span> {:%a %b %d %R %p}",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+    "on-click": "kitty calcurse",
+  },
+  "custom/notification": {
+    "tooltip": false,
+    "format": "😹",
+    "return-type": "json",
+    "exec-if": "which hyprlandnc-client",
+    "exec": "hyprlandnc-client -swb",
+    "on-click": "hyprlandnc-client -t -sw",
+    "on-click-right": "hyprlandnc-client -d -sw",
+    "escape": true
+  },
+  "custom/startpanel": {
+    "tooltip": false,
+    "format": "󰣇 ",
+    "return-type": "json",
+    "on-click": "source ~/fabric/.venv/bin/activate && python ~/.config/fabric/leftbar/spawner.py",
+    "escape": true
+  },
+
+  "custom/pacman": {
+    "format": "<span color='#a6d189'> 󰚰</span> {}",
+  	"interval": 3600,                     // every hour
+  	"exec": "checkupdates | wc -l",       // # of updates
+  	"exec-if": "exit 0",                  // always run; consider advanced run conditions
+  	"on-click": "termite -e 'sudo pacman -Syu'; pkill -SIGRTMIN+8 waybar", // update system
+  	"signal": 8
+  },
+
+  "custom/turbo": {
+    "format": "<span color='#e78284'>󱀚</span> {}",
+    "interval": 2,
+    "exec": "[[ $(cat /sys/devices/system/cpu/cpu0/cpufreq/boost) -eq 1 ]] && echo 'on' || echo 'off'",
+    "tooltip-format": "turbo boost status",
+  },
+}
