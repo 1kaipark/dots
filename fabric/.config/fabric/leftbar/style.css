@@ -270,5 +270,6 @@ box {
 
 
 #fetch {
+    min-width: 8rem;
     margin: 3rem 0.5rem;
 }

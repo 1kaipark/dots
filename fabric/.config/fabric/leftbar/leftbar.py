@@ -11,6 +11,7 @@ from fabric.widgets.overlay import Overlay
 from fabric.widgets.scale import Scale
 
 from fabric.audio.service import Audio 
+from services.brightness import Brightness
 
 from fabric.utils import get_relative_path, invoke_repeater, exec_shell_command_async
 from widgets.media import NowPlaying
@@ -330,6 +331,9 @@ class Controls(Box):
         super().__init__(orientation="v", **kwargs)
         self.audio = Audio(on_speaker_changed=self.on_speaker_changed)
         self.audio.connect("notify::speaker", self.on_speaker_changed)
+        
+        self.brightness = Brightness().get_initial()
+        self.brightness.connect("screen", self.on_brightness_changed)
 
         self.volume_box = ScaleControl(
             label=Icons.VOL.value,
@@ -340,12 +344,20 @@ class Controls(Box):
             "value-changed", self.change_volume
         )
         
-        self.brightness_box = ScaleControl(label=Icons.BRIGHTNESS.value, name="scale-b")
+        self.brightness_box = ScaleControl(
+            label=Icons.BRIGHTNESS.value,
+            name="scale-b"
+        )
+        
+        self.brightness_box.scale.connect(
+            "value-changed", lambda *_: self.update_brightness()
+        )
 
         self.add(self.volume_box)
         self.add(self.brightness_box)
         
         self.sync_with_audio()
+        self.update_brightness()
         
     def sync_with_audio(self):
         if not self.audio.speaker:
@@ -354,15 +366,11 @@ class Controls(Box):
         self.volume_box.scale.set_value(volume)
             
     def change_volume(self, scale):
-#         exec_shell_command_async(
-#             f"wpctl set-volume @DEFAULT_AUDIO_SINK@ {scale.value}%"
-#         )
         if not self.audio.speaker:
             return 
-        volume = self.volume_box.scale.value
+        volume = scale.value
         if 0 <= volume <= 100:
             self.audio.speaker.set_volume(volume)
-
         
     def on_speaker_changed(self, *_):
         if not self.audio.speaker:
@@ -384,6 +392,17 @@ class Controls(Box):
         
         volume = round(self.audio.speaker.volume)
         self.volume_box.scale.set_value(volume)
+        
+    def update_brightness(self, *_):
+        try:
+            norm_brightness = round((self.brightness.screen_brightness / self.brightness.max_screen) * 100)
+            self.brightness_box.scale.set_value(norm_brightness)
+        except Exception as e:
+            logger.error("Brightness is fuked bro: {}".format(str(e)))
+        
+    def on_brightness_changed(self, sender, value, *_):
+        norm_brightness = round((value / self.brightness.max_screen) * 100)
+        self.brightness_box.scale.set_value(norm_brightness)
                 
 
 
