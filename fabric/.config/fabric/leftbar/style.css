@@ -17,7 +17,7 @@
 #window {
     background-color: var(--bg);
     padding: 8px;
-    border: solid 0.2rem @subtext0;
+    border: solid 0.15rem @subtext0;
     border-radius: 10px;
 }
 
