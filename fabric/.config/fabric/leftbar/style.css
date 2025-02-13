@@ -1,10 +1,9 @@
-
-@import url("./catppuccin_frappe.css");
+@import url("./catppuccin_macchiato.css");
 
 /* Common variables */
 :vars {
-    --module-bg: alpha(@mantle, 0.4);
-    --bg: alpha(@base, 0.3); /* This looks like shit without blur*/
+    --module-bg: alpha(@crust, 0.6);
+    --bg: alpha(@mantle, 0.3); /* This looks like shit without blur*/
 }
 
 * {
@@ -12,46 +11,53 @@
     color: var(--text);
     font-size: 14px;
     font-family: "JetBrainsMono Nerd Font", sans-serif;
+    text-shadow: 2px 10px 5px mix(@crust, #000000, 0.5);
 }
 
 #window {
     background-color: var(--bg);
-    padding: 1rem;
+    padding: 8px;
     border: solid 0.2rem @subtext0;
+    border-radius: 10px;
 }
 
 box {
-    padding: 0 5px;
+    padding: 0.5rem 4px;
     min-height: 28px;
-    border-radius: 12px;
-    margin: 0px 2px;
+    border-radius: 10px;
+    margin: 0 0.1rem;
 }
 
 #outer-box {
     background-color: var(--module-bg);
-    margin: 0 2px;
+    margin: 0 0.5rem;
+    padding: 0 0.5rem;
 }
 
 #profile-pic {
     background-color: alpha(@base, 0.2);
     background-position: center;
     background-repeat: no-repeat;
+    border: solid 2px @subtext0;
     background-size: cover;
     min-height: 150px;
-    margin: 8px 0px 0px 0px;
+    margin: 0.5rem 0;
     border-radius: 30px;
+    box-shadow: 0 0 20px 1px @crust;
 }
 
 #greeter-label {
     font-size: 18px;
+    margin: 0.5rem 0;
 }
 
 #button-icon label {
     background-size: 400% 400%;
     font-size: 36px;
     color: @overlay0;
+    margin: 0.5rem;
 }
-#button-icon:hover label{
+#button-icon:hover label {
     color: @red;
 }
 
@@ -66,139 +72,191 @@ box {
     font-family: "Iosevka Nerd Font", sans-serif;
 }
 
-
-#progress-bar-red {
-    color: transparent;
-    background-color: @crust;
-    border: solid 0px;
-    border-color: @red;
-}
-
-
-#progress-bar-green {
-    color: transparent;
-    background-color: @crust;
-    border: solid 0px;
-    border-color: @green;
-    margin: 10rem;
-}
-
-
-#progress-bar-yellow {
-    color: transparent;
-    background-color: @crust;
-    border: solid 0px;
-    border-color: @yellow;
-}
-
-
+#progress-bar-red,
+#progress-bar-green,
+#progress-bar-yellow,
 #progress-bar-blue {
     color: transparent;
     background-color: @crust;
     border: solid 0px;
-    border-color: @blue;
+    margin: 0.5rem;
 }
 
-#label-green {
-    color: @green;
+#progress-bar-red { border-color: @red; }
+#progress-bar-green { border-color: @green; }
+#progress-bar-yellow { border-color: @yellow; }
+#progress-bar-blue { border-color: @blue; }
+
+#label-green { color: @green; }
+#label-red { color: @red; }
+#label-blue { color: @blue; }
+#label-yellow { color: @yellow; }
+#label-a { color: @mauve; }
+#label-b { color: @sapphire; }
+#label-c { color: @rosewater; }
+#label-d { color: @peach; }
+#label-e { color: @maroon; }
+
+#scale-a,
+#scale-b {
+    background-color: var(--module-bg);
+    border-radius: 100px;
+    margin: 0.2rem 0.5rem;
 }
 
-#label-red {
+#scale-b slider {
+    background-color: mix(@peach, @crust, 0.1);
+    box-shadow: 0 0 5px 1px @crust;
+    border-radius: 100%;
+    min-height: 1.2rem;
+    min-width: 1.2rem;
+}
+#scale-a slider {
+    background-color: mix(@red, @crust, 0.1);
+    box-shadow: 0 0 5px 1px @crust;
+    border-radius: 100%;
+    min-height: 1.2rem;
+    min-width: 1.2rem;
+}
+
+
+#scale-a label {
     color: @red;
+    font-size: 18px;
+    margin: 0 1rem;
 }
-
-#label-blue {
-    color: @blue;
-}
-
-#label-yellow {
-    color: @yellow;
-}
-
-#label-a {
-    color: @mauve;
-}
-
-#label-b {
-    color: @sapphire;
-}
-
-#label-c {
-    color: @rosewater;
-}
-
-#label-d {
+#scale-b label {
     color: @peach;
-}
-
-#label-e {
-    color: @maroon;
+    font-size: 18px;
+    margin: 0 1rem;
 }
 
 #scale-a scale trough highlight {
 	all: unset;
-    background-color: @peach;
+    background-color: @red;
 	border-radius: 8px;
-;
-}
-#scale-a scale trough {
-	all: unset;
-	background-color: @crust;
-	border-radius: 8px;
-	min-height: 12rem;
-	min-width: 1rem;
-	margin : 1rem;
-}
-#scale-a label {
-    color: @peach;
 }
 
 #scale-b scale trough highlight {
 	all: unset;
-    background-color: @red;
+    background-color: @peach;
 	border-radius: 8px;
-;
 }
+
+#scale-a scale trough,
 #scale-b scale trough {
 	all: unset;
 	background-color: @crust;
 	border-radius: 8px;
-	min-height: 12rem;
-	min-width: 1rem;
-	margin : 1rem;
-}
-#scale-b label {
-    color: @red;
+	min-height: 1rem;
+	min-width: 25rem;
+    margin: 0 1rem;
 }
 
 #media {
-    border: solid 2px @subtext0;
-    min-width: 20rem;
-    margin: 2rem;
+    box-shadow: 0 0 10px 1px mix(@crust, #000000, 0.5);
+    margin: 1rem 0;
 }
-
-#cava-label {
+#media #media-title {
+    min-width: 16rem;
+}
+#media label {
+    color: @red;
+    margin: 0;
+}
+#media #cava-label {
     color: @sapphire;
 }
 
 #circular-bar {
-    margin: 1rem;
-}
-
-#fetch {
-    padding: 1rem;
+    margin: 0.5rem;
 }
 
 #power-menu {
-    padding-right: 2.0rem;
+    margin: 0 1rem 0 0.5rem;
 }
 
 #cpu-temp {
     font-size: 18px;
+    margin: 0.5rem 0;
 }
 
 #separator {
     font-size: 48px;
-    margin: 0;
-    color: @base;
+    margin: 0.5rem;
+    color: alpha(@subtext1, 0.1);
+}
+
+#weather-temp {
+    font-size: 18px;
+    margin: 0.5rem 0;
+}
+
+#weather-desc {
+    color: @subtext0;
+    margin: 0.5rem 0;
+    min-width: 8rem;
+}
+
+
+#hw-mon {
+    min-height: 7rem;
+}
+#hw-mon #battery,
+#hw-mon #cpu,
+#hw-mon #ram,
+#hw-mon #temp {
+    margin: 0.5rem 0.4rem;
+}
+
+#hw-mon #battery #circular-bar {
+    background-color: @mantle;
+    color: @crust;
+    border-color: @green;
+}
+
+
+#hw-mon #battery label {
+    color: @green;
+}
+
+
+#hw-mon #cpu #circular-bar {
+    background-color: @mantle;
+    color: @crust;
+    border-color: @sapphire;
+}
+
+
+#hw-mon #cpu label {
+    color: @sapphire;
+}
+
+
+#hw-mon #ram #circular-bar {
+    background-color: @mantle;
+    color: @crust;
+    border-color: @blue;
+}
+
+
+#hw-mon #ram label {
+    color: @blue;
+}
+
+
+#hw-mon #temp #circular-bar {
+    background-color: @mantle;
+    color: @crust;
+    border-color: @red;
+}
+
+
+#hw-mon #temp label {
+    color: @red;
+}
+
+
+#fetch {
+    margin: 3rem 0.5rem;
 }

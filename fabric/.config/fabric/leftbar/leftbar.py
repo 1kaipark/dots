@@ -21,6 +21,8 @@ from loguru import logger
 
 from enum import Enum
 
+from utils.weather import WEATHER_CODES
+
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
@@ -89,9 +91,10 @@ class Icons(Enum):
     MEDIA_PAUSE = "󰏤"
     MEDIA_REPEAT = "󰑖"
     MEDIA_NEXT = "󰒭"
-    VOL = "󰕾 "
-    BRIGHTNESS = " "
-    TEMP = "󰔏 "
+    VOL = ""
+    VOL_MUTE = ""
+    BRIGHTNESS = "󱄄"
+    TEMP = "󰔏"
     PIC = ""
 
 
@@ -115,7 +118,7 @@ class Profile(Box):
         )
         self.username = Label(
             label=os.getlogin().title(),
-            style="margin: 0px 6px 0px 6px;",
+            style="margin: 2px 6px 2px 6px;",
             name="greeter-label",
         )
 
@@ -170,27 +173,31 @@ class Clock(Box):
 class CircularIndicator(Box):
     def __init__(
         self,
-        css_class_bar: str = "",
-        css_class_icon: str = "",
-        size: int = 60,
+        size: int = 48,
+        label: str = "0",
         icon: str = "",
+        orientation: str = 'v', # too lazy to import literal rn TODO TODO TODO
         **kwargs,
     ) -> None:
-        super().__init__(name="circular-bar", **kwargs)
+        super().__init__(orientation=orientation, **kwargs)
         self.progress_bar = CircularProgressBar(
-            name=css_class_bar,
+            name="circular-bar",
             pie=False,
             size=size,
         )
 
         self.icon = Label(
             label=icon,
-            style="margin: 0px 6px 0px 6px; font-size: {}px;".format(size // 3),
-            name=css_class_icon,
+            style="margin: 0px 6px 0px 8px; font-size: {}px;".format(size // 3),
+        )
+        
+        self.label = Label(
+            label=label,
         )
 
         overlay = Overlay(child=self.progress_bar, overlays=[self.icon], **kwargs)
         self.add(overlay)
+        self.add(self.label)
 
 
 class HWMonitor(Box):
@@ -198,48 +205,96 @@ class HWMonitor(Box):
         super().__init__(orientation="h", **kwargs)
 
         self.battery_progress_bar = CircularIndicator(
-            css_class_bar="progress-bar-green",
-            css_class_icon="label-green",
+            name="battery",
             icon=Icons.BAT.value,
         )
 
         self.add(self.battery_progress_bar)
 
         self.cpu_progress_bar = CircularIndicator(
-            css_class_bar="progress-bar-blue",
-            css_class_icon="label-blue",
+            name="cpu",
             icon=Icons.CPU.value,
         )
 
         self.add(self.cpu_progress_bar)
 
         self.ram_progress_bar = CircularIndicator(
-            css_class_bar="progress-bar-yellow",
-            css_class_icon="label-yellow",
+            name="ram",
             icon=Icons.MEM.value,
         )
 
         self.add(self.ram_progress_bar)
-        self.add(Separator())
+        
+        self.cpu_temp_progress_bar = CircularIndicator(
+            name="temp",
+            icon=Icons.TEMP.value,
+        )
 
         self.cpu_temp_label = Label(label="0°C", name="cpu-temp")
         cpu_temp_box = Box(
             children=[Label(label=Icons.TEMP.value, name="label-red", style="font-size: 36px;"), self.cpu_temp_label]
         )
         
-        self.add(cpu_temp_box)
+        self.add(self.cpu_temp_progress_bar)
+        
+        self.add(Separator())
+        
+        weather_widgets = []
+        self.weather_temp_label = Label(
+            name="weather-temp",
+            label="⛅️°C",
+        )
+        
+        self.weather_desc_label = Label(
+            name="weather-desc",
+            label="Weather"
+        )
+        
+        weather_widgets.append(self.weather_temp_label)
+        weather_widgets.append(self.weather_desc_label)
+        
+        weather = Box(
+            children=weather_widgets,
+            orientation='v'
+        )
+        
+        self.add(weather)
 
     def update_status(self) -> bool:
-        self.cpu_progress_bar.progress_bar.value = psutil.cpu_percent() / 100
-        self.ram_progress_bar.progress_bar.value = psutil.virtual_memory().percent / 100
+        cpu_percent = int(psutil.cpu_percent())
+        self.cpu_progress_bar.progress_bar.value = cpu_percent / 100
+        self.cpu_progress_bar.label.set_label(str(cpu_percent) + "%")
+        
+        ram_usage = int(psutil.virtual_memory().percent)
+        self.ram_progress_bar.progress_bar.value = ram_usage / 100
+        self.ram_progress_bar.label.set_label(str(ram_usage) + "%")
+        
+        
         if not (bat_sen := psutil.sensors_battery()):
             self.battery_progress_bar.progress_bar.value = 0.42
+            self.battery_progress_bar.label.set_label("INF%")
         else:
             self.battery_progress_bar.progress_bar.value = bat_sen.percent / 100
+            self.battery_progress_bar.label.set_label(str(int(bat_sen.percent)) + "%")
             
         cpu_temp = int(psutil.sensors_temperatures()['thinkpad'][0].current)
-        self.cpu_temp_label.set_label(str(cpu_temp)+"°C")
+        self.cpu_temp_progress_bar.progress_bar.value = cpu_temp / 100
+        self.cpu_temp_progress_bar.label.set_label(str(cpu_temp) + "°C")
+        
+        weather_fabricator = Fabricator(
+                interval=1000000,
+                poll_from=get_relative_path("./scripts/fetch_weather.sh"),
+                on_changed=self.update_weather_display
+        )
+
+        # curr_weather = fetch_weather()
         return 1
+    
+    def update_weather_display(self, f, v):
+        code, temp_F, desc = v.split("|")
+        icon = WEATHER_CODES[code]
+        self.weather_temp_label.set_label(icon + " " + temp_F + "°C")
+        self.weather_desc_label.set_label(desc[:10])
 
 
 class ScaleControl(Box):
@@ -251,27 +306,26 @@ class ScaleControl(Box):
         css_class_icon: str = "icon-a",
         **kwargs,
     ) -> None:
-        super().__init__(orientation="v", **kwargs)
+        super().__init__(orientation="h", **kwargs)
         self.scale = Scale(
             min_value=0,
             max_value=100,
             value=100,
             name=css_class_scale,
-            orientation="v",
-            inverted=True,
+            orientation="h",
         )
         self.label = Label(
             name=css_class_icon,
             label=label,
         )
 
-        self.add(self.scale)
         self.add(self.label)
+        self.add(self.scale)
 
 
 class Controls(Box):
     def __init__(self, **kwargs) -> None:
-        super().__init__(orientation="h", **kwargs)
+        super().__init__(orientation="v", **kwargs)
         self.audio = Audio(on_speaker_changed=self.on_speaker_changed)
         self.audio.connect("notify::speaker", self.on_speaker_changed)
 
@@ -322,7 +376,7 @@ class Controls(Box):
             return
         
         if self.audio.speaker.muted:
-            self.volume_box.label.set_label(":3")
+            self.volume_box.label.set_label(Icons.VOL_MUTE.value)
         else:
             self.volume_box.label.set_label(Icons.VOL.value)
         
@@ -355,7 +409,7 @@ class Fetch(Box):
             interval=500,
             poll_from="uptime -p",
             on_changed=lambda f, v: self.uptime_label.set_label(
-                f"up • {v[3:].replace(' hour', 'h').replace(' hours', 'h').replace(' minutes', 'm').replace(',', '')}"
+                f"up • {v[3:].replace(' hours', 'h').replace(' hour', 'h').replace(' minutes', 'm').replace(',', '')}"
             ),
         )
 
@@ -414,34 +468,45 @@ class SidePanel(Window):
 
         self.hwmon = HWMonitor(name="hw-mon")  # this goes in center_widgets
 
-        self.controls = Controls()  # sliders for vol, brightness
+        self.controls = Controls(name="controls")  # sliders for vol, brightness
 
         self.fetch = Fetch(name="fetch")  # idea: cool neofetch polling
 
-        self.media = NowPlaying(name="media", max_len=20, cava_bars=6)  # lil media player widget
+        self.media = NowPlaying(name="media", max_len=15, cava_bars=6)  # lil media player widget
 
         self.top_right = Box(
             children=[self.power_menu, self.clock],
             orientation="v",
         )
 
-        self.bottom_right = Box(children=[self.fetch, self.media], orientation="v")
-
-        self.top_widgets = [self.profile, self.top_right]
-        self.center_widgets = [self.hwmon]
-        self.bottom_widgets = [self.controls, self.bottom_right]
-
-        self.top = Box(
+        self.header = Box(
             orientation="h",
-            children=self.top_widgets,
+            children=[self.profile, self.top_right],
             name="outer-box",
         )
-
-        self.center = Box(orientation="h", children=self.center_widgets, name="outer-box")
-
-        self.bottom = Box(orientation="h", children=self.bottom_widgets, name="outer-box")
-
-        self.widgets = [self.top, self.center, self.bottom]
+        
+        self.row_1 = Box(
+            orientation="h",
+            children=[self.hwmon],
+            name="outer-box"
+        )
+        self.row_2 = Box(
+            orientation="h",
+            children=[self.controls],
+            name="outer-box"
+        )
+        self.row_3 = Box(
+            orientation="h",
+            children=[self.fetch, self.media],
+            name="outer-box"
+        )
+        
+        self.widgets = [
+            self.header,
+            self.row_1,
+            self.row_2,
+            self.row_3
+        ]
 
         self.add(
             Box(

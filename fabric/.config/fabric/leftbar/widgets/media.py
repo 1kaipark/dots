@@ -9,11 +9,18 @@ from fabric.widgets.centerbox import CenterBox
 
 from fabric.widgets.image import Image 
 
-from fabric.utils import exec_shell_command_async, get_relative_path
+from fabric.utils import exec_shell_command_async, get_relative_path, invoke_repeater
 
 from .cava import CavaWidget 
 from .dynamic_label import DynamicLabel
 
+import gi 
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gio, GLib
+
+import os
+
+from loguru import logger
 
 now_playing_fabricator = Fabricator(poll_from=r"playerctl -F metadata --format '{{album}}\n{{artist}}\n{{status}}\n{{title}}\n{{volume}}\n{{mpris:artUrl}}\n'", stream=True)
 
@@ -33,14 +40,14 @@ class NowPlaying(Box):
             independent_repeat=True,
             refresh_rate=500,
             separator=" | ",
-            name="label-e",
         )
 
 
         self.top_line = Box(
             children=[
                 CavaWidget(name="cava-box", bars=cava_bars ), Spacer(2), self.label,
-            ]
+            ],
+            name="media-title"
         )
         
         prev_icon = Image(icon_name="media-seek-backward-symbolic", name="icon")
@@ -56,41 +63,72 @@ class NowPlaying(Box):
             start_children=[self.prev_button],
             center_children=[self.play_pause_button],
             end_children=[self.next_button],
+            orientation="v",
+            name="media-controls"
         )
+        
+        self.cover_path = GLib.get_user_cache_dir() + "/coverart.jpg"
 
 
-        super().__init__(children=[self.top_line, self.controls], orientation="vertical", **kwargs)
-
+        super().__init__(children=[self.top_line, self.controls], orientation="h", **kwargs)
+        
+        self.top_line.set_style(
+            'background-image: url("https://amymhaddad.s3.amazonaws.com/morocco-blue.png");'
+        )
+        
         now_playing_fabricator.connect("changed", lambda *args: self.update_label_and_icon(*args))
 
-
+        self.art_path = os.path.join(
+            os.getenv('HOME'),
+            '.cache', 'hhhh', 'cover.png'
+        )
 
     def update_label_and_icon(self, fabricator, value):
-        # update label
-        self.label.replace_text(self.find_title(value))
-
-        # update play/paused icon 
-        self.status_label.set_from_icon_name(self.find_icon(value))
-        
         if value:
+            self.label.replace_text(self.find_title(value))
+            self.status_label.set_from_icon_name(self.find_icon(value))
             self._status = value.split(r"\n")[2]
+
+            if self._status == "Playing":
+                self.label.scrolling = True
+            else:
+                self.label.scrolling = False
+                
+                
+            exec_shell_command_async(
+                get_relative_path("../scripts/music.sh get"),
+            )
+            
+            invoke_repeater(1000, self.update_art)
+            
+            logger.info(self._status)
+            
         else:
             self._status = "Stopped"
+            self.status_label.set_from_icon_name("media-playback-start-symbolic")
+            self.label.replace_text("not playing")
+            self.remove_art()
 
-        if self._status == "Playing":
-            self.label.scrolling = True
-        else:
-            self.label.scrolling = False
-
-
-        print(self._status)
-
+    def update_art(self, *_):
+        logger.info("Update art")
+        if self._status == "Stopped":
+            logger.info("Nvm, nothing is playing")
+            return
+        self.top_line.set_style(
+            f"background-image: url('file://{self.art_path}'); background-size: cover;"
+        )
+    def remove_art(self, *_):
+        print("remove")
+        logger.info("Removing artwork...")
+        pic = "/home/kai/Pictures/wall/tokyonight_catppuccin_frappe_archpc_gruvbox.jpg"
+        self.top_line.set_style(
+            f"background-image: none; background-size: cover;"
+        )
 
     @staticmethod
     def find_title(value):
         try:
             album, artist, status, title, volume, art_url, *_ = value.split(r"\n")
-            print(album, artist)
             return (
                 f"{artist} - {title}" if album  # if its jellyfin
                 else f"{artist.replace(" - Topic", "")} - {title}" if artist.endswith(" - Topic")  # if its youtube and artist/channel name has "topic"
@@ -102,7 +140,7 @@ class NowPlaying(Box):
     @staticmethod
     def find_icon(value):
         icon_dict = {
-            "Stopped": "media-playback-stop-symbolic",
+            "Stopped": "media-playback-pause-symbolic",
             "Paused": "media-playback-start-symbolic",
             "Playing": "media-playback-pause-symbolic",
         }
@@ -111,6 +149,9 @@ class NowPlaying(Box):
         except IndexError:
             return ""
 
+    def update_image(self): 
+        print("Okay")
+
 
     def toggle_play(self, *args):
         if self._status == "Playing":
@@ -118,7 +159,6 @@ class NowPlaying(Box):
         else:
             exec_shell_command_async("playerctl play")
 
-        print("Toggle " + self._status)
 
     def prev_track(self, *_):
         exec_shell_command_async("playerctl previous")
