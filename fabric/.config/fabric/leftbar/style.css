@@ -4,6 +4,7 @@
 :vars {
     --module-bg: alpha(@crust, 0.6);
     --bg: alpha(@mantle, 0.3); /* This looks like shit without blur*/
+    --shadow: mix(@crust, #000000, 0.6);
 }
 
 * {
@@ -11,7 +12,7 @@
     color: var(--text);
     font-size: 14px;
     font-family: "JetBrainsMono Nerd Font", sans-serif;
-    text-shadow: 2px 10px 5px mix(@crust, #000000, 0.5);
+    text-shadow: 8px 8px 10px var(--shadow);
 }
 
 #window {
@@ -43,7 +44,7 @@ box {
     min-height: 150px;
     margin: 0.5rem 0;
     border-radius: 30px;
-    box-shadow: 0 0 20px 1px @crust;
+    box-shadow: 0 0 20px 1px var(--shadow);
 }
 
 #greeter-label {
@@ -154,7 +155,7 @@ box {
 }
 
 #media {
-    box-shadow: 0 0 10px 1px mix(@crust, #000000, 0.5);
+    box-shadow: 0 0 10px 1px var(--shadow);
     margin: 1rem 0;
     padding: 0;
 }
