@@ -17,8 +17,6 @@ class CavaWidget(Button):
         self.children = self.box
 
         cava_label = Label(
-            v_align="center",
-            h_align="center",
             name="cava-label",
             label="▁"*bars,
         )

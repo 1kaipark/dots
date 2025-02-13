@@ -43,10 +43,11 @@ class NowPlaying(Box):
         )
 
 
-        self.top_line = Box(
+        self.title_box = Box(
             children=[
-                CavaWidget(name="cava-box", bars=cava_bars ), Spacer(2), self.label,
+                self.label,CavaWidget(name="cava-box", bars=cava_bars),
             ],
+            orientation='v',
             name="media-title"
         )
         
@@ -70,9 +71,9 @@ class NowPlaying(Box):
         self.cover_path = GLib.get_user_cache_dir() + "/coverart.jpg"
 
 
-        super().__init__(children=[self.top_line, self.controls], orientation="h", **kwargs)
+        super().__init__(children=[self.title_box, self.controls], orientation="h", **kwargs)
         
-        self.top_line.set_style(
+        self.title_box.set_style(
             'background-image: url("https://amymhaddad.s3.amazonaws.com/morocco-blue.png");'
         )
         
@@ -114,14 +115,14 @@ class NowPlaying(Box):
         if self._status == "Stopped":
             logger.info("Nvm, nothing is playing")
             return
-        self.top_line.set_style(
+        self.title_box.set_style(
             f"background-image: url('file://{self.art_path}'); background-size: cover;"
         )
     def remove_art(self, *_):
         print("remove")
         logger.info("Removing artwork...")
         pic = "/home/kai/Pictures/wall/tokyonight_catppuccin_frappe_archpc_gruvbox.jpg"
-        self.top_line.set_style(
+        self.title_box.set_style(
             f"background-image: none; background-size: cover;"
         )
 

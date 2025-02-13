@@ -472,7 +472,7 @@ class SidePanel(Window):
 
         self.fetch = Fetch(name="fetch")  # idea: cool neofetch polling
 
-        self.media = NowPlaying(name="media", max_len=15, cava_bars=6)  # lil media player widget
+        self.media = NowPlaying(name="media", max_len=20, cava_bars=24)  # lil media player widget
 
         self.top_right = Box(
             children=[self.power_menu, self.clock],

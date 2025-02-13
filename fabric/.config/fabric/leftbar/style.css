@@ -156,9 +156,14 @@ box {
 #media {
     box-shadow: 0 0 10px 1px mix(@crust, #000000, 0.5);
     margin: 1rem 0;
+    padding: 0;
 }
 #media #media-title {
     min-width: 16rem;
+    border-radius: 10px 0px 0px 10px;
+}
+#media #cava-box {
+    margin: 4.5rem 0 0 0;
 }
 #media label {
     color: @red;
@@ -166,6 +171,12 @@ box {
 }
 #media #cava-label {
     color: @sapphire;
+    margin: 0;
+}
+#media #media-controls  {
+    margin: 0;
+    background-color: var(--module-bg);
+    border-radius: 0px 10px 10px 0px;
 }
 
 #circular-bar {
