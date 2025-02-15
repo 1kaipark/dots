@@ -1,3 +1,10 @@
+"""
+a basic and minimal control center made in fabric/Gtk.
+
+TODO : desparately needs a refactor but who cares lmao
+"""
+
+
 import os, psutil, time
 
 from fabric import Application, Fabricator
@@ -30,6 +37,8 @@ import gi
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
+
+import requests
 
 """
 CSS CLASSES
@@ -281,7 +290,11 @@ class HWMonitor(Box):
             label="⛅️°C",
         )
 
-        self.weather_desc_label = DynamicLabel(name="weather-desc", label="Weather", max_len=15, independent_repeat=True)
+        # self.weather_desc_label = DynamicLabel(name="weather-desc", label="Weather", max_len=15, independent_repeat=True)
+
+        self.weather_desc_label = Gtk.Label(name="weather-desc", label="weather")
+        self.weather_desc_label.set_line_wrap(True)
+        self.weather_desc_label.set_max_width_chars(18)
 
         weather_widgets.append(self.weather_temp_label)
         weather_widgets.append(self.weather_desc_label)
@@ -472,7 +485,7 @@ class Fetch(Box):
         
 class Launchers(Box):
     def __init__(self, **kwargs) -> None: 
-        super().__init__(**kwargs)
+        super().__init__(orientation="v", **kwargs)
         
         self.launcher = Button(
             name="button-icon",
@@ -503,12 +516,40 @@ class Launchers(Box):
             label=Icons.FILES.value,
             on_clicked=lambda *_: exec_shell_command_async(Commands.FILES.value)
         )
+
+        buttons_box = Box(orientation="h")
         
-        self.add(self.launcher)
-        self.add(self.term)
-        self.add(self.browser)
-        self.add(self.files)
-        self.add(self.settings)
+        buttons_box.add(self.launcher)
+        buttons_box.add(self.term)
+        buttons_box.add(self.browser)
+        buttons_box.add(self.files)
+        buttons_box.add(self.settings)
+
+        self.add(buttons_box)
+        self.quote_label = Gtk.Label()
+        self.quote_label.set_line_wrap(True)
+
+        self.add(self.quote_label)
+
+        _ = Fabricator(
+            interval=3600*1000,
+            default_value="Hi Bro - anonymous",
+            poll_from=self.get_quote,
+            on_changed=lambda f, v: (
+                self.quote_label.set_label(v)
+            ) 
+        )
+        
+    @staticmethod
+    def get_quote(*_):
+        quote = requests.get("https://favqs.com/api/qotd").json()['quote']
+        return '"' + quote['body'] + '"\n-' + quote['author']
+
+
+
+
+
+
         
 class Separator(Label):
     def __init__(self, wide: bool = False, **kwargs) -> None:
