@@ -3,9 +3,9 @@
 {
   //"layer": "top", // Waybar at top layer
   "height": 40,
-  "modules-left": ["custom/startpanel", "group/control", "hyprland/window"],
+//  "modules-left": ["custom/startpanel", "group/control", "hyprland/window"],
   "modules-center": ["hyprland/workspaces"],
-  "modules-right": ["tray", "group/hw", "clock", "custom/notification"],
+  "modules-right": ["tray", "group/control", "group/hw", "clock", "custom/notification"],
   // Modules configuratio1
 
   "hyprland/workspaces": {
@@ -26,7 +26,7 @@
   },
   "group/hw": {
     "orientation": "horizontal",
-    "modules": ["battery", "cpu", "temperature", "memory", "custom/turbo"],
+    "modules": ["battery", "cpu", "custom/turbo"],
   },
   "cpu": {
     "format": "<span color='#b2ccd6'>󰍛</span> {usage}%",

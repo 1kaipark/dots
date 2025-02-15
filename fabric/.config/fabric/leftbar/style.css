@@ -17,22 +17,22 @@
 
 #window {
     background-color: var(--bg);
-    padding: 8px;
-    border: solid 0.15rem @subtext0;
+    padding: 10px 5px;
+    border: solid 2px @subtext0;
     border-radius: 10px;
 }
 
 box {
-    padding: 0.5rem 4px;
-    min-height: 28px;
+    padding: 4px 4px;
+    min-height: 24px;
     border-radius: 10px;
-    margin: 0 0.1rem;
+    margin: 0 2px;
 }
 
 #outer-box {
     background-color: var(--module-bg);
-    margin: 0 0.5rem;
-    padding: 0 0.5rem;
+    margin: 0 2px;
+    padding: 0 5px;
 }
 
 #profile-pic {
@@ -41,34 +41,34 @@ box {
     background-repeat: no-repeat;
     border: solid 2px @subtext0;
     background-size: cover;
-    min-height: 150px;
-    margin: 0.5rem 0;
+    min-height: 120px;
+    margin: 5px;
     border-radius: 30px;
     box-shadow: 0 0 20px 1px var(--shadow);
 }
 
 #greeter-label {
     font-size: 18px;
-    margin: 0.5rem 0;
+    margin: 4px 0;
 }
 
 #button-icon label {
     background-size: 400% 400%;
-    font-size: 36px;
+    font-size: 32px;
     color: @overlay0;
-    margin: 0.5rem;
+    margin: 0 5px;
 }
 #button-icon:hover label {
     color: @red;
 }
 
 #clock-a label {
-    font-size: 44px;
+    font-size: 36px;
     font-family: "Iosevka Nerd Font", bold;
 }
 
 #clock-b label {
-    font-size: 32px;
+    font-size: 24px;
     color: @subtext0;
     font-family: "Iosevka Nerd Font", sans-serif;
 }
@@ -185,7 +185,7 @@ box {
 }
 
 #power-menu {
-    margin: 0 1rem 0 0.5rem;
+    margin-right: 10px;
 }
 
 #cpu-temp {
@@ -195,30 +195,30 @@ box {
 
 #separator {
     font-size: 48px;
-    margin: 0.5rem;
+    margin: 2px;
     color: alpha(@subtext1, 0.1);
 }
 
 #weather-temp {
     font-size: 18px;
-    margin: 0.5rem 0;
+    margin: 5px 0;
 }
 
 #weather-desc {
     color: @subtext0;
-    margin: 0.5rem 0;
+    margin: 0;
     min-width: 8rem;
 }
 
 
 #hw-mon {
-    min-height: 7rem;
+    min-height: 20px;
 }
 #hw-mon #battery,
 #hw-mon #cpu,
 #hw-mon #ram,
 #hw-mon #temp {
-    margin: 0.5rem 0.4rem;
+    margin: 5px;
 }
 
 #hw-mon #battery #circular-bar {
@@ -271,5 +271,24 @@ box {
 
 #fetch {
     min-width: 8rem;
-    margin: 3rem 0.5rem;
+    margin-top: 35px;
+}
+#popup-window {
+    background-color: var(--module-bg);
+    border-radius: 10px;
+    border: 2px solid @text;
+    margin: 0 0.5rem;
+    padding: 0 0.5rem;
+}
+#popup-window label {
+    font-size: 18px;
+    text-shadow: 8px 8px 25px #000000;
+}
+#popup-window button {
+    background-color: @surface0;
+    border-radius: 10px;
+    padding: 0 1rem;
+}
+#popup-window button:hover label {
+    color: @red;
 }

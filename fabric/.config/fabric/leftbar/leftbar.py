@@ -10,11 +10,12 @@ from fabric.widgets.datetime import DateTime
 from fabric.widgets.overlay import Overlay
 from fabric.widgets.scale import Scale
 
-from fabric.audio.service import Audio 
+from fabric.audio.service import Audio
 from services.brightness import Brightness
 
 from fabric.utils import get_relative_path, invoke_repeater, exec_shell_command_async
 from widgets.media import NowPlaying
+from widgets.popup import ConfirmationBox
 
 import sys
 
@@ -25,7 +26,8 @@ from enum import Enum
 from utils.weather import WEATHER_CODES
 
 import gi
-gi.require_version('Gtk', '3.0')
+
+gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
 """
@@ -72,9 +74,9 @@ def get_os_name() -> str:
 
 class Commands(Enum):
     LAUNCHER = "rofi -show drun"
-    LOGOUT = "notify-send 'logout'"
-    REBOOT = "notify-send 'reboot'"
-    SHUTDOWN = "notify-send 'shutdown'"
+    LOGOUT = "hyprctl dispatch exit"
+    REBOOT = "reboot"
+    SHUTDOWN = "shutdown now"
     WALLPAPER = get_relative_path("./scripts/wpswitch.sh")
 
 
@@ -134,19 +136,34 @@ class PowerMenu(Box):
         self.logout = Button(
             name="button-icon",
             label=Icons.LOGOUT.value,
-            on_clicked=lambda *_: exec_shell_command_async(Commands.LOGOUT.value),
+            on_clicked=lambda *_: ConfirmationBox(
+                parent=self,
+                prompt="Logout?",
+                command=Commands.LOGOUT.value,
+                name="popup-window",
+            ),
         )
 
         self.reboot = Button(
             name="button-icon",
             label=Icons.REBOOT.value,
-            on_clicked=lambda *_: exec_shell_command_async(Commands.REBOOT.value),
+            on_clicked=lambda *_: ConfirmationBox(
+                parent=self,
+                prompt="Reboot?",
+                command=Commands.REBOOT.value,
+                name="popup-window",
+            )
         )
 
         self.shutdown = Button(
             name="button-icon",
             label=Icons.POWER.value,
-            on_clicked=lambda *_: exec_shell_command_async(Commands.SHUTDOWN.value),
+            on_clicked=lambda *_: ConfirmationBox(
+                parent=self,
+                prompt="Shutdown?",
+                command=Commands.SHUTDOWN.value,
+                name="popup-window",
+            )
         )
 
         self.wallpaper_switch = Button(
@@ -179,7 +196,7 @@ class CircularIndicator(Box):
         size: int = 48,
         label: str = "0",
         icon: str = "",
-        orientation: str = 'v', # too lazy to import literal rn TODO TODO TODO
+        orientation: str = "v",  # too lazy to import literal rn TODO TODO TODO
         **kwargs,
     ) -> None:
         super().__init__(orientation=orientation, **kwargs)
@@ -193,7 +210,7 @@ class CircularIndicator(Box):
             label=icon,
             style="margin: 0px 6px 0px 8px; font-size: {}px;".format(size // 3),
         )
-        
+
         self.label = Label(
             label=label,
         )
@@ -227,7 +244,7 @@ class HWMonitor(Box):
         )
 
         self.add(self.ram_progress_bar)
-        
+
         self.cpu_temp_progress_bar = CircularIndicator(
             name="temp",
             icon=Icons.TEMP.value,
@@ -235,64 +252,63 @@ class HWMonitor(Box):
 
         self.cpu_temp_label = Label(label="0°C", name="cpu-temp")
         cpu_temp_box = Box(
-            children=[Label(label=Icons.TEMP.value, name="label-red", style="font-size: 36px;"), self.cpu_temp_label]
+            children=[
+                Label(
+                    label=Icons.TEMP.value, name="label-red", style="font-size: 36px;"
+                ),
+                self.cpu_temp_label,
+            ]
         )
-        
+
         self.add(self.cpu_temp_progress_bar)
-        
+
         self.add(Separator())
-        
+
         weather_widgets = []
         self.weather_temp_label = Label(
             name="weather-temp",
             label="⛅️°C",
         )
-        
-        self.weather_desc_label = Label(
-            name="weather-desc",
-            label="Weather"
-        )
-        
+
+        self.weather_desc_label = Label(name="weather-desc", label="Weather")
+        self.weather_desc_label.set_lines(3)
+
         weather_widgets.append(self.weather_temp_label)
         weather_widgets.append(self.weather_desc_label)
-        
-        weather = Box(
-            children=weather_widgets,
-            orientation='v'
-        )
-        
+
+        weather = Box(children=weather_widgets, orientation="v")
+
         self.add(weather)
 
     def update_status(self) -> bool:
         cpu_percent = int(psutil.cpu_percent())
         self.cpu_progress_bar.progress_bar.value = cpu_percent / 100
         self.cpu_progress_bar.label.set_label(str(cpu_percent) + "%")
-        
+
         ram_usage = int(psutil.virtual_memory().percent)
         self.ram_progress_bar.progress_bar.value = ram_usage / 100
         self.ram_progress_bar.label.set_label(str(ram_usage) + "%")
-        
-        
+
         if not (bat_sen := psutil.sensors_battery()):
             self.battery_progress_bar.progress_bar.value = 0.42
             self.battery_progress_bar.label.set_label("INF%")
         else:
             self.battery_progress_bar.progress_bar.value = bat_sen.percent / 100
             self.battery_progress_bar.label.set_label(str(int(bat_sen.percent)) + "%")
-            
-        cpu_temp = int(psutil.sensors_temperatures()['thinkpad'][0].current)
+
+        cpu_temp = int(psutil.sensors_temperatures()["thinkpad"][0].current)
         self.cpu_temp_progress_bar.progress_bar.value = cpu_temp / 100
         self.cpu_temp_progress_bar.label.set_label(str(cpu_temp) + "°C")
-        
+
         weather_fabricator = Fabricator(
-                interval=1000000,
-                poll_from=get_relative_path("./scripts/fetch_weather.sh"),
-                on_changed=self.update_weather_display
+            interval=1000000,
+            poll_from=get_relative_path("./scripts/fetch_weather.sh"),
+            on_changed=self.update_weather_display,
         )
 
         # curr_weather = fetch_weather()
         return 1
-    
+
     def update_weather_display(self, f, v):
         code, temp_F, desc = v.split("|")
         icon = WEATHER_CODES[code]
@@ -331,7 +347,7 @@ class Controls(Box):
         super().__init__(orientation="v", **kwargs)
         self.audio = Audio(on_speaker_changed=self.on_speaker_changed)
         self.audio.connect("notify::speaker", self.on_speaker_changed)
-        
+
         self.brightness = Brightness().get_initial()
         self.brightness.connect("screen", self.on_brightness_changed)
 
@@ -339,73 +355,65 @@ class Controls(Box):
             label=Icons.VOL.value,
             name="scale-a",
         )
-        
-        self.volume_box.scale.connect(
-            "value-changed", self.change_volume
-        )
-        
-        self.brightness_box = ScaleControl(
-            label=Icons.BRIGHTNESS.value,
-            name="scale-b"
-        )
-        
+
+        self.volume_box.scale.connect("value-changed", self.change_volume)
+
+        self.brightness_box = ScaleControl(label=Icons.BRIGHTNESS.value, name="scale-b")
+
         self.brightness_box.scale.connect(
             "value-changed", lambda *_: self.update_brightness()
         )
 
         self.add(self.volume_box)
         self.add(self.brightness_box)
-        
+
         self.sync_with_audio()
         self.update_brightness()
-        
+
     def sync_with_audio(self):
         if not self.audio.speaker:
             return
         volume = round(self.audio.speaker.volume)
         self.volume_box.scale.set_value(volume)
-            
+
     def change_volume(self, scale):
         if not self.audio.speaker:
-            return 
+            return
         volume = scale.value
         if 0 <= volume <= 100:
             self.audio.speaker.set_volume(volume)
-        
+
     def on_speaker_changed(self, *_):
         if not self.audio.speaker:
             return
-        self.audio.speaker.connect(
-            "notify::volume", self.update_volume
-        )
-        
+        self.audio.speaker.connect("notify::volume", self.update_volume)
+
         self.update_volume()
-    
+
     def update_volume(self, *_):
         if not self.audio.speaker:
             return
-        
+
         if self.audio.speaker.muted:
             self.volume_box.label.set_label(Icons.VOL_MUTE.value)
         else:
             self.volume_box.label.set_label(Icons.VOL.value)
-        
+
         volume = round(self.audio.speaker.volume)
         self.volume_box.scale.set_value(volume)
-        
+
     def update_brightness(self, *_):
         try:
-            norm_brightness = round((self.brightness.screen_brightness / self.brightness.max_screen) * 100)
+            norm_brightness = round(
+                (self.brightness.screen_brightness / self.brightness.max_screen) * 100
+            )
             self.brightness_box.scale.set_value(norm_brightness)
         except Exception as e:
             logger.error("Brightness is fuked bro: {}".format(str(e)))
-        
+
     def on_brightness_changed(self, sender, value, *_):
         norm_brightness = round((value / self.brightness.max_screen) * 100)
         self.brightness_box.scale.set_value(norm_brightness)
-                
-
-
 
 
 class Fetch(Box):
@@ -417,7 +425,12 @@ class Fetch(Box):
         self.pkg_label = Label(name="label-c")
         self.disk_label = Label(name="label-d")
 
-        for label in [self.os_label, self.uptime_label, self.pkg_label, self.disk_label]:
+        for label in [
+            self.os_label,
+            self.uptime_label,
+            self.pkg_label,
+            self.disk_label,
+        ]:
             self.add(label)
 
         self.update_status()
@@ -437,19 +450,21 @@ class Fetch(Box):
         pkgs_fabricator = Fabricator(
             interval=5000,
             poll_from=get_relative_path("./scripts/package_count.sh"),
-            on_changed=lambda f, v: self.pkg_label.set_label(f"pkgs • {v}")
+            on_changed=lambda f, v: self.pkg_label.set_label(f"pkgs • {v}"),
         )
 
         df_fabricator = Fabricator(
             interval=5000,
             poll_from=get_relative_path("./scripts/disk_usage.sh"),
-            on_changed=lambda f, v: self.disk_label.set_label(f"df • {v}")
+            on_changed=lambda f, v: self.disk_label.set_label(f"df • {v}"),
         )
+
 
 class Separator(Label):
     def __init__(self, wide: bool = False, **kwargs) -> None:
         delim = "|" if not wide else " | "
         super().__init__(name="separator", label=delim, **kwargs)
+
 
 class SidePanel(Window):
     def __init__(self, **kwargs):
@@ -493,7 +508,9 @@ class SidePanel(Window):
 
         self.fetch = Fetch(name="fetch")  # idea: cool neofetch polling
 
-        self.media = NowPlaying(name="media", max_len=20, cava_bars=24)  # lil media player widget
+        self.media = NowPlaying(
+            name="media", max_len=20, cava_bars=24
+        )  # lil media player widget
 
         self.top_right = Box(
             children=[self.power_menu, self.clock],
@@ -505,29 +522,14 @@ class SidePanel(Window):
             children=[self.profile, self.top_right],
             name="outer-box",
         )
-        
-        self.row_1 = Box(
-            orientation="h",
-            children=[self.hwmon],
-            name="outer-box"
-        )
-        self.row_2 = Box(
-            orientation="h",
-            children=[self.controls],
-            name="outer-box"
-        )
+
+        self.row_1 = Box(orientation="h", children=[self.hwmon], name="outer-box")
+        self.row_2 = Box(orientation="h", children=[self.controls], name="outer-box")
         self.row_3 = Box(
-            orientation="h",
-            children=[self.fetch, self.media],
-            name="outer-box"
+            orientation="h", children=[self.fetch, self.media], name="outer-box"
         )
-        
-        self.widgets = [
-            self.header,
-            self.row_1,
-            self.row_2,
-            self.row_3
-        ]
+
+        self.widgets = [self.header, self.row_1, self.row_2, self.row_3]
 
         self.add(
             Box(
