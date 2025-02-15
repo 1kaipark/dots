@@ -269,6 +269,12 @@ box {
     min-width: 30px;
     margin-top: 35px;
 }
+#launchers #button-icon {
+    padding: 0 27px;
+}
+
+
+
 #popup-window {
     background-color: var(--module-bg);
     border-radius: 10px;

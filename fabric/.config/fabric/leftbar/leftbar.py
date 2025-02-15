@@ -79,6 +79,10 @@ class Commands(Enum):
     REBOOT = "reboot"
     SHUTDOWN = "shutdown now"
     WALLPAPER = get_relative_path("./scripts/wpswitch.sh")
+    TERM = "ghostty"
+    BROWSER = "firefox"
+    SETTINGS = "systemsettings"
+    FILES = "dolphin"
 
 
 class Icons(Enum):
@@ -100,6 +104,12 @@ class Icons(Enum):
     BRIGHTNESS = "󱄄"
     TEMP = "󰔏"
     PIC = ""
+    SEND = ""
+    SETTINGS = ""
+    TERM = ""
+    BROWSER = "󰖟"
+    FILES = ""
+    
 
 
 def get_profile_picture_path() -> str | None:
@@ -459,8 +469,47 @@ class Fetch(Box):
             poll_from=get_relative_path("./scripts/disk_usage.sh"),
             on_changed=lambda f, v: self.disk_label.set_label(f"df • {v}"),
         )
+        
+class Launchers(Box):
+    def __init__(self, **kwargs) -> None: 
+        super().__init__(**kwargs)
+        
+        self.launcher = Button(
+            name="button-icon",
+            label=Icons.SEND.value,
+            on_clicked=lambda *_: exec_shell_command_async(Commands.LAUNCHER.value)
+        )
 
-
+        self.settings = Button(
+            name="button-icon",
+            label=Icons.SETTINGS.value,
+            on_clicked=lambda *_: exec_shell_command_async(Commands.SETTINGS.value)
+        )
+        
+        self.term = Button(
+            name="button-icon",
+            label=Icons.TERM.value,
+            on_clicked=lambda *_: exec_shell_command_async(Commands.TERM.value)
+        )
+        
+        self.browser = Button(
+            name="button-icon",
+            label=Icons.BROWSER.value,
+            on_clicked=lambda *_: exec_shell_command_async(Commands.BROWSER.value)
+        )
+        
+        self.files = Button(
+            name="button-icon",
+            label=Icons.FILES.value,
+            on_clicked=lambda *_: exec_shell_command_async(Commands.FILES.value)
+        )
+        
+        self.add(self.launcher)
+        self.add(self.term)
+        self.add(self.browser)
+        self.add(self.files)
+        self.add(self.settings)
+        
 class Separator(Label):
     def __init__(self, wide: bool = False, **kwargs) -> None:
         delim = "|" if not wide else " | "
@@ -512,7 +561,9 @@ class ControlCenter(Window):
 
         self.media = NowPlaying(
             name="media", max_len=15, cava_bars=24
-        )  # lil media player widget
+        )  
+        
+        self.launchers = Launchers(name="launchers")
 
         self.top_right = Box(
             children=[self.power_menu, self.clock],
@@ -530,8 +581,11 @@ class ControlCenter(Window):
         self.row_3 = Box(
             orientation="h", children=[self.fetch, self.media], name="outer-box"
         )
+        self.row_4 = Box(
+            orientation="h", children=[self.launchers], name="outer-box"
+        )
 
-        self.widgets = [self.header, self.row_1, self.row_2, self.row_3]
+        self.widgets = [self.header, self.row_1, self.row_2, self.row_3, self.row_4]
 
         self.add(
             Box(
