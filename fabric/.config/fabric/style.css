@@ -1,3 +1,4 @@
+
 @import url("./catppuccin_macchiato.css");
 
 /* Common variables */
@@ -80,7 +81,7 @@ box {
     color: transparent;
     background-color: @crust;
     border: solid 0px;
-    margin: 0.5rem;
+    margin: 10px;
 }
 
 #progress-bar-red { border-color: @red; }
@@ -102,69 +103,68 @@ box {
 #scale-b {
     background-color: var(--module-bg);
     border-radius: 100px;
-    margin: 0.2rem 0.5rem;
+    margin: 10px 10px;
 }
 
 #scale-b slider {
     background-color: mix(@peach, @crust, 0.1);
     box-shadow: 0 0 5px 1px @crust;
     border-radius: 100%;
-    min-height: 1.2rem;
-    min-width: 1.2rem;
+    min-height: 18px;
+    min-width: 18px;
 }
 #scale-a slider {
     background-color: mix(@red, @crust, 0.1);
     box-shadow: 0 0 5px 1px @crust;
     border-radius: 100%;
-    min-height: 1.2rem;
-    min-width: 1.2rem;
+    min-height: 18px;
+    min-width: 18px;
 }
 
 
 #scale-a label {
     color: @red;
     font-size: 18px;
-    margin: 0 1rem;
+    margin: 0 5px;
 }
 #scale-b label {
     color: @peach;
     font-size: 18px;
-    margin: 0 1rem;
+    margin: 0 5px;
 }
 
 #scale-a scale trough highlight {
-	all: unset;
+    all: unset;
     background-color: @red;
-	border-radius: 8px;
+    border-radius: 8px;
 }
 
 #scale-b scale trough highlight {
-	all: unset;
+    all: unset;
     background-color: @peach;
-	border-radius: 8px;
+    border-radius: 8px;
 }
 
 #scale-a scale trough,
 #scale-b scale trough {
-	all: unset;
-	background-color: @crust;
-	border-radius: 8px;
-	min-height: 1rem;
-	min-width: 25rem;
-    margin: 0 1rem;
+    all: unset;
+    background-color: @crust;
+    border-radius: 8px;
+    min-height: 5px;
+    min-width: 370px;
+    margin: 0 10px;
 }
 
 #media {
     box-shadow: 0 0 10px 1px var(--shadow);
-    margin: 1rem 0;
+    margin: 15px;
     padding: 0;
 }
 #media #media-title {
-    min-width: 16rem;
     border-radius: 10px 0px 0px 10px;
 }
 #media #cava-box {
-    margin: 4.5rem 0 0 0;
+    margin: 80px 0 0 0;
 }
 #media label {
     color: @red;
@@ -181,17 +181,13 @@ box {
 }
 
 #circular-bar {
-    margin: 0.5rem;
+    margin: 20px;
 }
 
 #power-menu {
     margin-right: 10px;
 }
 
-#cpu-temp {
-    font-size: 18px;
-    margin: 0.5rem 0;
-}
 
 #separator {
     font-size: 48px;
@@ -207,7 +203,7 @@ box {
 #weather-desc {
     color: @subtext0;
     margin: 0;
-    min-width: 8rem;
+    min-width: 30px;
 }
 
 
@@ -270,15 +266,15 @@ box {
 
 
 #fetch {
-    min-width: 8rem;
+    min-width: 30px;
     margin-top: 35px;
 }
 #popup-window {
     background-color: var(--module-bg);
     border-radius: 10px;
     border: 2px solid @text;
-    margin: 0 0.5rem;
-    padding: 0 0.5rem;
+    margin: 0 15px;
+    padding: 0 15px;
 }
 #popup-window label {
     font-size: 18px;
@@ -287,8 +283,54 @@ box {
 #popup-window button {
     background-color: @surface0;
     border-radius: 10px;
-    padding: 0 1rem;
+    padding: 0 10px;
 }
 #popup-window button:hover label {
     color: @red;
 }
+
+
+
+
+/* BAR CSS */ 
+window#bar {
+    border-radius: 20px;
+}
+#bar {
+    all: unset;
+    border: none;
+    font-size: 14px;
+    font-family: "JetBrainsMono Nerd Font";
+    padding: 3px 5px 5px 0px;
+    border-radius: 20px;
+    background-color: alpha(@crust, 0.7);
+    text-shadow: none;
+}
+#bar label {
+    color: @text;
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+    border-radius: 20px;
+}
+#bar button {
+    padding: 0 10px;
+    background-color: transparent;
+}
+#bar button:hover label {
+    color: @red;
+}
+#bar box {
+    padding: 0;
+    margin: 1px;
+    min-height: 34px;
+    border-radius: 20px;
+    background-color: transparent;
+}
+#bar #hyprland-window button:hover label {
+    color: @text;
+}
+#bar #h {
+    background-color: @red;
+}
+

@@ -2,36 +2,16 @@ import os
 
 from fabric import Application
 from fabric.utils import get_relative_path
-from leftbar import SidePanel
+from leftbar.leftbar import ControlCenter
 
-from utils.monitors import get_current_gdk_monitor_id as get_focused_monitor
-
-import setproctitle 
-
-
-setproctitle.setproctitle("startpanel")
-# def get_focused_monitor() -> int:
-#     # efficient code bro
-#     monitors = Connection().get_outputs()
-# 
-#     if len(monitors) == 1:
-#         return 0
-# 
-#     for i in range(len(monitors)):
-#         if monitors[i].focused:
-#             return i 
-# 
-#     return 0
-
-SCRIPT_NAME = "startpanel"
+SCRIPT_NAME = "control-center"
 
 # lock file indicates process is running
 LOCKFILE = f"/tmp/{SCRIPT_NAME}.pid"
 
 def spawn() -> None:
-    side_panel = SidePanel()
-    side_panel.monitor = get_focused_monitor()
-    app = Application("side-panel", side_panel)
+    control_center = ControlCenter()
+    app = Application("control-center", control_center)
     app.set_stylesheet_from_file(get_relative_path("./style.css"))
 
     app.run()
@@ -63,6 +43,7 @@ if __name__ == "__main__":
             os.kill(pid, 9)  # SIGKILL
         remove_lock()
     else:
+        # If not running, start the overlay
         lock()
         spawn()
-        remove_lock()  
+        remove_lock()  # Clean up PID file on exit

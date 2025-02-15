@@ -74,7 +74,7 @@ class NowPlaying(Box):
         super().__init__(children=[self.title_box, self.controls], orientation="h", **kwargs)
         
         self.title_box.set_style(
-            'background-image: url("https://amymhaddad.s3.amazonaws.com/morocco-blue.png");'
+                'background-image: url("https://amymhaddad.s3.amazonaws.com/morocco-blue.png");'
         )
         
         now_playing_fabricator.connect("changed", lambda *args: self.update_label_and_icon(*args))

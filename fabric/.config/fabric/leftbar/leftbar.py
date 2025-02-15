@@ -11,11 +11,12 @@ from fabric.widgets.overlay import Overlay
 from fabric.widgets.scale import Scale
 
 from fabric.audio.service import Audio
-from services.brightness import Brightness
+from .services.brightness import Brightness
 
 from fabric.utils import get_relative_path, invoke_repeater, exec_shell_command_async
-from widgets.media import NowPlaying
-from widgets.popup import ConfirmationBox
+from .widgets.media import NowPlaying
+from .widgets.popup import ConfirmationBox
+from .widgets.dynamic_label import DynamicLabel
 
 import sys
 
@@ -23,7 +24,7 @@ from loguru import logger
 
 from enum import Enum
 
-from utils.weather import WEATHER_CODES
+from .utils.weather import WEATHER_CODES
 
 import gi
 
@@ -270,8 +271,7 @@ class HWMonitor(Box):
             label="⛅️°C",
         )
 
-        self.weather_desc_label = Label(name="weather-desc", label="Weather")
-        self.weather_desc_label.set_lines(3)
+        self.weather_desc_label = DynamicLabel(name="weather-desc", label="Weather", max_len=15, independent_repeat=True)
 
         weather_widgets.append(self.weather_temp_label)
         weather_widgets.append(self.weather_desc_label)
@@ -310,10 +310,11 @@ class HWMonitor(Box):
         return 1
 
     def update_weather_display(self, f, v):
-        code, temp_F, desc = v.split("|")
+        logger.info(v)
+        code, temp_C, desc = v.split("|")
         icon = WEATHER_CODES[code]
-        self.weather_temp_label.set_label(icon + " " + temp_F + "°C")
-        self.weather_desc_label.set_label(desc[:10])
+        self.weather_temp_label.set_label(icon + " " + temp_C + "°C")
+        self.weather_desc_label.set_label(desc)
 
 
 class ScaleControl(Box):
@@ -441,9 +442,9 @@ class Fetch(Box):
 
         uptime_fabricator = Fabricator(
             interval=500,
-            poll_from="uptime -p",
+            poll_from=get_relative_path("./scripts/uptime.sh"),
             on_changed=lambda f, v: self.uptime_label.set_label(
-                f"up • {v[3:].replace(' hours', 'h').replace(' hour', 'h').replace(' minutes', 'm').replace(',', '')}"
+                f"up • {v}"
             ),
         )
 
@@ -466,18 +467,19 @@ class Separator(Label):
         super().__init__(name="separator", label=delim, **kwargs)
 
 
-class SidePanel(Window):
+class ControlCenter(Window):
     def __init__(self, **kwargs):
         super().__init__(
             layer="overlay",
-            title="fabric-overlay",
+            title="control-center",
             anchor="top left",
             margin="10px 10px 10px 10px",
             exclusivity="none",
             visible=False,
             all_visible=False,
             keyboard_mode="on-demand",
-            on_key_press_event=lambda _, event: self.application.quit()
+#            on_key_press_event=lambda _, event: self.application.quit()
+            on_key_press_event=lambda _, event: self.hide()
             if event.keyval == 65307
             else True,  # handle ESC = exit
             **kwargs,
@@ -509,7 +511,7 @@ class SidePanel(Window):
         self.fetch = Fetch(name="fetch")  # idea: cool neofetch polling
 
         self.media = NowPlaying(
-            name="media", max_len=20, cava_bars=24
+            name="media", max_len=15, cava_bars=24
         )  # lil media player widget
 
         self.top_right = Box(
@@ -549,8 +551,8 @@ class SidePanel(Window):
 
 
 if __name__ == "__main__":
-    side_panel = SidePanel()
-    app = Application("side-panel", side_panel)
+    control_center = ControlCenter()
+    app = Application("side-panel", control_center)
     app.set_stylesheet_from_file(get_relative_path("./style.css"))
 
     app.run()

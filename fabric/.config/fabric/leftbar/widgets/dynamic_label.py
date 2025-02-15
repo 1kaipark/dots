@@ -49,3 +49,8 @@ class DynamicLabel(Label):
         print("replace called")
         self.set_text(self.display_text)
 
+    def set_label(self, label): 
+        self._label = label 
+        if len(self._label) <= self.max_len:
+            super().set_label(self._label)
+

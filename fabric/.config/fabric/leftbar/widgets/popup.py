@@ -154,8 +154,8 @@ class ConfirmationBox(PopupWindow):
         self.command = command
 
         self.text = Label(label=prompt)
-        self.yes = Button(label="yes", on_clicked=self.execute)
-        self.no = Button(label="no", on_clicked=lambda *_: self.hide())
+        self.yes = Button(label="(y)es", on_clicked=self.execute)
+        self.no = Button(label="(n)o", on_clicked=lambda *_: self.destroy())
 
         buttonbox = CenterBox(orientation="h", start_children=[self.no], end_children=[self.yes], spacing=24)
 
@@ -164,13 +164,23 @@ class ConfirmationBox(PopupWindow):
             parent=parent,
             margin="10px 10px 10px 10px",
             child=Box(children=[self.text, buttonbox], spacing=24, orientation="v", name="window-inner"),
+            keyboard_mode="exclusive",
+            on_key_press_event=self.handle_key_press,
             **kwargs
         )
 
     def execute(self, *_):
         exec_shell_command_async(self.command)
-        self.hide()
+        self.destroy()
 
     def set_text(self, text: str):
         self.text.set_text(text) # beautiful and readable btw
+
+    def handle_key_press(self, _, event):
+        if event.keyval in [65307, 110, 78]:
+            self.destroy()
+        elif event.keyval in [121, 89]:
+            self.execute()
+
+
 
