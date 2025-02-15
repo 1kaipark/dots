@@ -26,12 +26,12 @@ window#waybar {
   margin-right: 10px;
   
   margin-top: 10px;
-  background: alpha(@crust, 0.9);
+  background: alpha(@crust, 0.7);
 }
 
 .modules-center {
   margin-top: 10px;
-  background: alpha(@crust, 0.9);
+  background: alpha(@crust, 0.7);
 }
 
 .modules-left {
@@ -106,6 +106,6 @@ window#waybar {
 @keyframes blink {
     to {
         background-color: #ffffff;
-        color: alpha(@crust, 0.9);
+        color: alpha(@crust, 0.7);
     }
 }

@@ -1,7 +1,7 @@
 // https://github.com/moktavizen/dotfiles/blob/main/waybar/.config/waybar/config.jsonc
 // -*- mode: jsonc -*-
 {
-  //"layer": "top", // Waybar at top layer
+  "layer": "top", // Waybar at top layer
   "height": 40,
 //  "modules-left": ["custom/startpanel", "group/control", "hyprland/window"],
   "modules-center": ["hyprland/workspaces"],
