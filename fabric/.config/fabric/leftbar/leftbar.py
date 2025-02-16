@@ -496,7 +496,7 @@ class QuoteDisplay(Box):
         self.add(self.quote_label)
 
         _ = Fabricator(
-            interval=60000,
+            interval=3600*1000,
             default_value="Hi Bro - anonymous",
             poll_from=get_relative_path("./scripts/quotes.sh"),
             on_changed=lambda f, v: (
@@ -518,7 +518,7 @@ class ControlCenter(Window):
             layer="overlay",
             title="control-center",
             anchor="top left",
-            margin="10px 10px 10px 10px",
+            margin="8px 8px 8px 8px",
             exclusivity="none",
             visible=False,
             all_visible=False,
@@ -543,7 +543,7 @@ class ControlCenter(Window):
         #    \_/\_/  |___|____/ \____|_____| |_| |____/
         #
 
-        self.profile = Profile()
+        self.profile = Profile(name="outer-box")
 
         self.power_menu = PowerMenu(name="power-menu")
 
@@ -566,12 +566,12 @@ class ControlCenter(Window):
         self.top_right = Box(
             children=[self.power_menu, self.clock],
             orientation="v",
+            name="outer-box"
         )
 
         self.header = Box(
             orientation="h",
             children=[self.profile, self.top_right],
-            name="outer-box",
         )
 
         self.row_1 = Box(orientation="h", children=[self.hwmon], name="outer-box")

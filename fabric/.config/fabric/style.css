@@ -3,9 +3,9 @@
 
 /* Common variables */
 :vars {
-    --module-bg: alpha(@crust, 0.6);
-    --bg: alpha(@mantle, 0.3); /* This looks like shit without blur*/
-    --shadow: mix(@crust, #000000, 0.6);
+    --module-bg: alpha(@mantle, 0.6);
+    --bg: alpha(@crust, 0.6); /* This looks like shit without blur*/
+    --shadow: mix(@crust, #000000, 0.5);
 }
 
 * {
@@ -18,39 +18,39 @@
 
 #window {
     background-color: var(--bg);
-    padding: 10px 5px;
-    border: solid 2px @subtext0;
-    border-radius: 10px;
+    padding: 8px;
+    border-radius: 24px;
 }
 
 box {
     padding: 4px 4px;
     min-height: 24px;
-    border-radius: 10px;
-    margin: 0 2px;
+    border-radius: 16px;
 }
 
 #outer-box {
     background-color: var(--module-bg);
-    margin: 0 2px;
+    margin: 0 5px;
+    min-height: 24px;
+    border-radius: 16px;
     padding: 0 5px;
 }
 
+
 #profile-pic {
-    background-color: alpha(@base, 0.2);
+    background-color: transparent;
     background-position: center;
     background-repeat: no-repeat;
-    border: solid 2px @subtext0;
     background-size: cover;
-    min-height: 120px;
-    margin: 5px;
-    border-radius: 30px;
-    box-shadow: 0 0 20px 1px var(--shadow);
+    min-height: 50px;
+    border-radius: 8px;
+    border: solid 2px @subtext0;
+    padding: 32px;
+    margin: 10px 40px;
 }
 
 #greeter-label {
     font-size: 18px;
-    margin: 4px 0;
 }
 
 #button-icon label {
@@ -158,11 +158,9 @@ box {
 
 #media {
     box-shadow: 0 0 10px 1px var(--shadow);
-    margin: 15px;
+    margin: 15px 0 15px 30px;
     padding: 0;
-}
-#media #media-title {
-    border-radius: 10px 0px 0px 10px;
+    border-radius: 8px;
 }
 #media #cava-box {
     margin: 80px 0 0 0;
