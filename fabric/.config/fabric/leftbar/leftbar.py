@@ -25,11 +25,12 @@ from .widgets.media import NowPlaying
 from .widgets.popup import ConfirmationBox
 from .widgets.dynamic_label import DynamicLabel
 
+from .user.icons import Icons
+from .user.commands import Commands
+
 import sys
 
 from loguru import logger
-
-from enum import Enum
 
 from .utils.weather import WEATHER_CODES
 
@@ -81,44 +82,6 @@ def get_os_name() -> str:
     )
     return pretty_name.strip()
 
-
-class Commands(Enum):
-    LAUNCHER = "rofi -show drun"
-    LOGOUT = "hyprctl dispatch exit"
-    REBOOT = "reboot"
-    SHUTDOWN = "shutdown now"
-    WALLPAPER = get_relative_path("./scripts/wpswitch.sh")
-    TERM = "ghostty"
-    BROWSER = "firefox"
-    SETTINGS = "systemsettings"
-    FILES = "dolphin"
-
-
-class Icons(Enum):
-    POWER = " "
-    LOGOUT = " 󰗽 "
-    REBOOT = "󰜉 "
-    SLEEP = "󰤄 "
-    CPU = " "
-    MEM = " "
-    BOOST = "󱀚 "
-    BAT = " "
-    MEDIA_PREV = "󰒮"
-    MEDIA_PLAY = "󰐊"
-    MEDIA_PAUSE = "󰏤"
-    MEDIA_REPEAT = "󰑖"
-    MEDIA_NEXT = "󰒭"
-    VOL = ""
-    VOL_MUTE = ""
-    BRIGHTNESS = "󱄄"
-    TEMP = "󰔏"
-    PIC = ""
-    SEND = ""
-    SETTINGS = ""
-    TERM = ""
-    BROWSER = "󰖟"
-    FILES = ""
-    
 
 
 def get_profile_picture_path() -> str | None:
@@ -485,7 +448,7 @@ class Fetch(Box):
         
 class Launchers(Box):
     def __init__(self, **kwargs) -> None: 
-        super().__init__(orientation="v", **kwargs)
+        super().__init__(orientation="h", **kwargs)
         
         self.launcher = Button(
             name="button-icon",
@@ -517,37 +480,29 @@ class Launchers(Box):
             on_clicked=lambda *_: exec_shell_command_async(Commands.FILES.value)
         )
 
-        buttons_box = Box(orientation="h")
         
-        buttons_box.add(self.launcher)
-        buttons_box.add(self.term)
-        buttons_box.add(self.browser)
-        buttons_box.add(self.files)
-        buttons_box.add(self.settings)
+        self.add(self.launcher)
+        self.add(self.term)
+        self.add(self.browser)
+        self.add(self.files)
+        self.add(self.settings)
 
-        self.add(buttons_box)
+class QuoteDisplay(Box):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.quote_label = Gtk.Label()
         self.quote_label.set_line_wrap(True)
 
         self.add(self.quote_label)
 
         _ = Fabricator(
-            interval=3600*1000,
+            interval=60000,
             default_value="Hi Bro - anonymous",
-            poll_from=self.get_quote,
+            poll_from=get_relative_path("./scripts/quotes.sh"),
             on_changed=lambda f, v: (
                 self.quote_label.set_label(v)
             ) 
         )
-        
-    @staticmethod
-    def get_quote(*_):
-        quote = requests.get("https://favqs.com/api/qotd").json()['quote']
-        return '"' + quote['body'] + '"\n-' + quote['author']
-
-
-
-
 
 
         
@@ -606,6 +561,8 @@ class ControlCenter(Window):
         
         self.launchers = Launchers(name="launchers")
 
+        self.quote_display = QuoteDisplay(name="quote-display")
+
         self.top_right = Box(
             children=[self.power_menu, self.clock],
             orientation="v",
@@ -626,7 +583,11 @@ class ControlCenter(Window):
             orientation="h", children=[self.launchers], name="outer-box"
         )
 
-        self.widgets = [self.header, self.row_1, self.row_2, self.row_3, self.row_4]
+        self.row_5 = Box(
+            orientation="h", children=[self.quote_display], name="outer-box"
+        )
+
+        self.widgets = [self.header, self.row_1, self.row_2, self.row_3, self.row_4, self.row_5]
 
         self.add(
             Box(

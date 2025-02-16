@@ -52,7 +52,10 @@ class NowPlaying(Box):
         )
         
         prev_icon = Image(icon_name="media-seek-backward-symbolic", name="icon")
-        self.prev_button = Button(child=prev_icon, on_clicked=self.prev_track)
+        self.prev_button = Button(
+            child=prev_icon,
+            on_clicked=self.prev_track
+        )
 
         self.status_label = Image(icon_name="media-playback-start-symbolic", name="icon")
         self.play_pause_button = Button(child=self.status_label, on_clicked=self.toggle_play)
