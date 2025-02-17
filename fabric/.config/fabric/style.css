@@ -69,20 +69,6 @@
     font-family: "Iosevka Nerd Font", sans-serif;
 }
 
-#progress-bar-red,
-#progress-bar-green,
-#progress-bar-yellow,
-#progress-bar-blue {
-    color: transparent;
-    background-color: @crust;
-    border: solid 0px;
-    margin: 10px;
-}
-
-#progress-bar-red { border-color: @red; }
-#progress-bar-green { border-color: @green; }
-#progress-bar-yellow { border-color: @yellow; }
-#progress-bar-blue { border-color: @blue; }
 
 #label-green { color: @green; }
 #label-red { color: @red; }
@@ -197,7 +183,7 @@
 
 #weather-temp {
     font-size: 18px;
-    margin: 5px 0;
+    margin-top: 15px;
 }
 
 #weather-desc {
@@ -214,7 +200,7 @@
 #hw-mon #cpu,
 #hw-mon #ram,
 #hw-mon #temp {
-    margin: 0 12px;
+    margin: 12px;
 }
 
 #hw-mon #battery #circular-bar {
