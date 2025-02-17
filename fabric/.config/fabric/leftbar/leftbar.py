@@ -279,8 +279,13 @@ class HWMonitor(Box):
             self.battery_progress_bar.progress_bar.value = 0.42
             self.battery_progress_bar.label.set_label("INF%")
         else:
+            if psutil.sensors_battery().power_plugged:
+                self.battery_progress_bar.icon.set_label(Icons.CHARGING.value)
+            else:
+                self.battery_progress_bar.icon.set_label(Icons.BAT.value)
             self.battery_progress_bar.progress_bar.value = bat_sen.percent / 100
             self.battery_progress_bar.label.set_label(str(int(bat_sen.percent)) + "%")
+
 
         cpu_temp = int(psutil.sensors_temperatures()["thinkpad"][0].current)
         self.cpu_temp_progress_bar.progress_bar.value = cpu_temp / 100

@@ -9,6 +9,7 @@ class Icons(Enum):
     MEM = " "
     BOOST = "󱀚 "
     BAT = " "
+    CHARGING = ""
     MEDIA_PREV = "󰒮"
     MEDIA_PLAY = "󰐊"
     MEDIA_PAUSE = "󰏤"
