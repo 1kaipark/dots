@@ -1,7 +1,7 @@
 from enum import Enum
 
 class Icons(Enum):
-    POWER = " "
+    POWER = ""
     LOGOUT = "󰗽"
     REBOOT = ""
     SLEEP = "󰤄"
