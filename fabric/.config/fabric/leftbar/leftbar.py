@@ -344,7 +344,7 @@ class Controls(Box):
         self.volume_box = ScaleControl(
             label=Icons.VOL.value,
             name="scale-a",
-            button_callback=lambda *_: exec_shell_command_async()
+            button_callback=lambda *_: exec_shell_command_async("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle")
         )
 
         self.volume_box.scale.connect("value-changed", self.change_volume)

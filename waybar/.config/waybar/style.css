@@ -1,4 +1,4 @@
-@import "catppuccin_macchiato.css";
+@import "catppuccin_frappe.css";
 
 * {
     border: none;
@@ -16,8 +16,7 @@ window#waybar {
   margin: 5px 5px 5px 5px;
 }
 
-#custom-logo {
-  padding: 10px 10px;
+#custom-notification {
 }
 
 .modules-right {
