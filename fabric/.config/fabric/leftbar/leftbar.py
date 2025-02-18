@@ -312,9 +312,7 @@ class ScaleControl(Box):
     def __init__(
         self,
         label,
-        initial_value: int = 50,
-        css_class_scale: str = "scale",
-        css_class_icon: str = "icon-a",
+        button_callback=lambda *_: 1,
         **kwargs,
     ) -> None:
         super().__init__(orientation="h", **kwargs)
@@ -322,12 +320,11 @@ class ScaleControl(Box):
             min_value=0,
             max_value=100,
             value=100,
-            name=css_class_scale,
             orientation="h",
         )
-        self.label = Label(
-            name=css_class_icon,
+        self.label = Button(
             label=label,
+            on_clicked=button_callback
         )
 
         self.add(self.label)
@@ -346,6 +343,7 @@ class Controls(Box):
         self.volume_box = ScaleControl(
             label=Icons.VOL.value,
             name="scale-a",
+            button_callback=lambda *_: exec_shell_command_async(Commands.MUTE.value)
         )
 
         self.volume_box.scale.connect("value-changed", self.change_volume)

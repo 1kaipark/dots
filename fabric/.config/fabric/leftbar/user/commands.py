@@ -11,5 +11,6 @@ class Commands(Enum):
     BROWSER = "firefox"
     SETTINGS = "systemsettings"
     FILES = "dolphin"
+    MUTE = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
 
 
