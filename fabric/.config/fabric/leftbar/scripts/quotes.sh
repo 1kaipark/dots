@@ -6,5 +6,5 @@ body=$(echo "$quote" | jq -r '.q')
 author=$(echo "$quote" | jq -r '.a')
 
 
-echo "$body - $author"
+echo "'$body' - $author"
 

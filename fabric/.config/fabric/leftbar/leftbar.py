@@ -270,10 +270,11 @@ class HWMonitor(Box):
         cpu_percent = int(psutil.cpu_percent())
         self.cpu_progress_bar.progress_bar.value = cpu_percent / 100
         self.cpu_progress_bar.label.set_label(str(cpu_percent) + "%")
-
-        ram_usage = int(psutil.virtual_memory().percent)
-        self.ram_progress_bar.progress_bar.value = ram_usage / 100
-        self.ram_progress_bar.label.set_label(str(ram_usage) + "%")
+        
+        ram = psutil.virtual_memory()
+        ram_usage = (ram.total - ram.available)/(1024**3)
+        self.ram_progress_bar.progress_bar.value = ram.percent / 100
+        self.ram_progress_bar.label.set_label(f"{ram_usage:.1f} GB")
 
         if not (bat_sen := psutil.sensors_battery()):
             self.battery_progress_bar.progress_bar.value = 0.42
@@ -343,7 +344,7 @@ class Controls(Box):
         self.volume_box = ScaleControl(
             label=Icons.VOL.value,
             name="scale-a",
-            button_callback=lambda *_: exec_shell_command_async(Commands.MUTE.value)
+            button_callback=lambda *_: exec_shell_command_async()
         )
 
         self.volume_box.scale.connect("value-changed", self.change_volume)

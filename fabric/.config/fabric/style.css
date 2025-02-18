@@ -4,7 +4,7 @@
 /* Common variables */
 :vars {
     --module-bg: alpha(@mantle, 0.6);
-    --bg: alpha(@crust, 0.6); /* This looks like shit without blur*/
+    --bg: alpha(@crust, 0.4); /* This looks like shit without blur*/
     --shadow: mix(@crust, #000000, 0.5);
 }
 

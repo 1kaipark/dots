@@ -39,7 +39,6 @@ class NowPlaying(Box):
             max_len=max_len,
             independent_repeat=True,
             refresh_rate=500,
-            separator=" | ",
         )
 
 
@@ -77,7 +76,7 @@ class NowPlaying(Box):
         super().__init__(children=[self.title_box, self.controls], orientation="h", **kwargs)
         
         self.title_box.set_style(
-                'background-image: url("https://amymhaddad.s3.amazonaws.com/morocco-blue.png");'
+                'background-image: none;'
         )
         
         now_playing_fabricator.connect("changed", lambda *args: self.update_label_and_icon(*args))
@@ -92,6 +91,7 @@ class NowPlaying(Box):
             self.label.replace_text(self.find_title(value))
             self.status_label.set_from_icon_name(self.find_icon(value))
             self._status = value.split(r"\n")[2]
+            art_url = value.split(r"\n")[5]
 
             if self._status == "Playing":
                 self.label.scrolling = True
@@ -103,7 +103,8 @@ class NowPlaying(Box):
                 get_relative_path("../scripts/music.sh get"),
             )
             
-            invoke_repeater(1000, self.update_art)
+            # I love lambda spaghetti
+            invoke_repeater(1000, lambda *_: self.update_art(*_) if art_url != "" else self.remove_art())
             
             logger.info(self._status)
             
@@ -138,6 +139,7 @@ class NowPlaying(Box):
                 else f"{artist.replace(" - Topic", "")} - {title}" if artist.endswith(" - Topic")  # if its youtube and artist/channel name has "topic"
                 else title
             )
+
         except ValueError as e:
             return ""
 

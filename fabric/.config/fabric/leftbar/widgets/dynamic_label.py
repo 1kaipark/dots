@@ -5,12 +5,10 @@ class DynamicLabel(Label):
     def __init__(self, 
                  label: str, 
                  max_len: int = 25, 
-                 separator: str = " ",
                  independent_repeat: bool = False,
                  refresh_rate: int = 1000,
                  **kwargs):
         self.max_len = max_len
-        self.separator = separator
         self._label = label # internally store actual text
 
         self.display_text = self._label[:self.max_len]
@@ -32,10 +30,10 @@ class DynamicLabel(Label):
         if len(self._label) <= self.max_len:
             return True # no scroll if the text fits within the constraint 
 
-        if self.scroll_idx >= len(self._label + self.separator): 
+        if self.scroll_idx >= len(self._label + " "): 
             self.scroll_idx = 0 # reset scroll idx 
 
-        display_text = self._label[self.scroll_idx:] + self.separator + self._label[:self.scroll_idx]
+        display_text = self._label[self.scroll_idx:] + " " + self._label[:self.scroll_idx]
 
         self.display_text = display_text[:self.max_len]
 
@@ -46,7 +44,6 @@ class DynamicLabel(Label):
     def replace_text(self, text: str):
         self._label = text 
         self.display_text = self._label[:self.max_len]
-        print("replace called")
         self.set_text(self.display_text)
 
     def set_label(self, label): 
