@@ -148,7 +148,9 @@
 #media-title {
     padding: 4px 4px;
     min-height: 24px;
+    min-width: 228px;
     border-radius: 16px;
+    margin-left: 12px;
 }
 #cava-box {
     margin: 80px 12px 0 12px;
@@ -163,10 +165,6 @@
 }
 #media-controls button:hover #icon {
     color: @red;
-}
-
-#circular-bar {
-    margin: 12px;
 }
 
 #separator {
@@ -194,7 +192,7 @@
 #hw-mon #cpu,
 #hw-mon #ram,
 #hw-mon #temp {
-    margin: 12px;
+    margin: 14px;
 }
 
 #hw-mon #battery #circular-bar {
