@@ -112,6 +112,6 @@ class Launchers(Gtk.Grid):
         self.attach(self.editor, 3, 0, 1, 1)
         self.attach(self.music, 3, 1, 1, 1)
 
-        self.set_column_spacing(80)
+        self.set_column_spacing(84)
         self.set_row_spacing(12)
 

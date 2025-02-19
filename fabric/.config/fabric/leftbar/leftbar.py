@@ -85,7 +85,7 @@ class ControlCenter(Window):
         self.fetch = Fetch(name="fetch")  # idea: cool neofetch polling
 
         self.media = NowPlaying(
-            name="inner-box", max_len=15, cava_bars=24
+            name="inner-box", max_len=25, cava_bars=24
         )  
         
         self.launchers = Launchers(name="launchers")
