@@ -12,5 +12,8 @@ class Commands(Enum):
     SETTINGS = "systemsettings"
     FILES = "dolphin"
     MUTE = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+    NOTES = "obsidian --ozone-platform=wayland --ozone-platform-hint=auto --enable-features=UseOzonePlatform,WaylandWindowDecorations %U"
+    EDITOR = "code --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform-hint=auto"
+    MUSIC = "spotify-launcher"
 
 

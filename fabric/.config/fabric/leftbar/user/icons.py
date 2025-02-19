@@ -25,6 +25,10 @@ class Icons(Enum):
     TERM = ""
     BROWSER = "󰖟"
     FILES = ""
+    NOTES = "󰠮"
+    EDITOR = ""
+    MUSIC = ""
+
     
 
 

@@ -6,9 +6,13 @@ from ..user.icons import Icons
 from ..user.commands import Commands
 from .popup import ConfirmationBox
 
-class PowerMenu(Box):
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk
+
+class PowerMenu(Gtk.Grid):
     def __init__(self, **kwargs) -> None:
-        super().__init__(orientation="h", **kwargs)
+        super().__init__(orientation=Gtk.Orientation.HORIZONTAL, **kwargs)
 
         self.logout = Button(
             name="button-icon",
@@ -53,3 +57,5 @@ class PowerMenu(Box):
         self.add(self.reboot)
         self.add(self.shutdown)
         self.add(self.wallpaper_switch)
+
+        self.set_row_spacing(6)

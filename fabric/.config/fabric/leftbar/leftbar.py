@@ -74,7 +74,7 @@ class ControlCenter(Window):
 
         self.profile = Profile(name="outer-box")
 
-        self.power_menu = PowerMenu(name="power-menu")
+        self.power_menu = PowerMenu()
 
         self.clock = Clock()
 
@@ -85,7 +85,7 @@ class ControlCenter(Window):
         self.fetch = Fetch(name="fetch")  # idea: cool neofetch polling
 
         self.media = NowPlaying(
-            name="media", max_len=15, cava_bars=24
+            name="inner-box", max_len=15, cava_bars=24
         )  
         
         self.launchers = Launchers(name="launchers")
