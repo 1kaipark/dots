@@ -14,7 +14,7 @@
     color: var(--text);
     font-size: 14px;
     font-family: "JetBrainsMono Nerd Font", sans-serif;
-    text-shadow: 8px 8px 13px var(--shadow);
+    text-shadow: 8px 8px 12px var(--shadow);
 }
 
 #window {
@@ -40,7 +40,7 @@
     border-radius: 4px;
     border: solid 3px @text;
     padding: 33px;
-    margin: 13px 50px;
+    margin: 12px 50px;
 }
 
 #greeter-label {
@@ -51,7 +51,7 @@
     background-size: 400% 400%;
     font-size: 33px;
     color: @overlay0;
-    margin: 0 13px;
+    margin: 0 12px;
     
 }
 #button-icon:hover label {
@@ -60,7 +60,7 @@
 
 #clock-a label {
     font-size: 36px;
-    margin-top: 13px;
+    margin-top: 12px;
     font-family: "Iosevka Nerd Font", bold;
 }
 
@@ -86,7 +86,7 @@
     background-color: alpha(@base, 0.3);
     padding: 3px 0;
     border-radius: 100px;
-    margin: 13px 13px;
+    margin: 6px 12px;
 }
 
 #scale-b slider {
@@ -108,12 +108,12 @@
 #scale-a label {
     color: @red;
     font-size: 18px;
-    margin: 0 6px;
+    margin: 0 12px;
 }
 #scale-b label {
     color: @peach;
     font-size: 18px;
-    margin: 0 6px;
+    margin: 0 12px;
 }
 
 #scale-a scale trough highlight {
@@ -140,8 +140,8 @@
 
 
 #inner-box {
-    box-shadow: 0 0 13px 1px var(--shadow);
-    margin: 13px;
+    box-shadow: 0 0 12px 1px var(--shadow);
+    margin: 12px;
     padding: 0;
     border-radius: 8px;
 }
@@ -151,7 +151,7 @@
     border-radius: 16px;
 }
 #cava-box {
-    margin: 80px 13px 0 13px;
+    margin: 80px 12px 0 12px;
 }
 #media-title label {
     color: @sapphire;
@@ -159,14 +159,14 @@
 }
 #media-controls  {
     margin: 8px;
-    border-radius: 0px 13px 13px 0px;
+    border-radius: 0px 12px 12px 0px;
 }
 #media-controls button:hover #icon {
     color: @red;
 }
 
 #circular-bar {
-    margin: 20px;
+    margin: 12px;
 }
 
 #separator {
@@ -194,7 +194,7 @@
 #hw-mon #cpu,
 #hw-mon #ram,
 #hw-mon #temp {
-    margin: 13px;
+    margin: 12px;
 }
 
 #hw-mon #battery #circular-bar {
@@ -247,21 +247,21 @@
 
 #fetch {
     min-width: 30px;
-    margin: 36px 20px;
+    margin: 36px 12px;
 }
 
 #launchers {
-    padding: 0 13px;
+    padding: 0 12px;
 }
 #quote-display label {
-    padding: 13px;
+    padding: 12px;
 }
 
 
 
 #popup-window {
     background-color: var(--module-bg);
-    border-radius: 13px;
+    border-radius: 12px;
     border: 1px solid @text;
     margin: 0 16px;
     padding: 0 16px;
@@ -272,8 +272,8 @@
 }
 #popup-window button {
     background-color: @surface0;
-    border-radius: 13px;
-    padding: 0 13px;
+    border-radius: 12px;
+    padding: 0 12px;
     margin: 6px;
 }
 #popup-window button:hover label {
@@ -305,7 +305,7 @@ window#bar {
     border-radius: 20px;
 }
 #bar button {
-    padding: 0 13px;
+    padding: 0 12px;
     background-color: transparent;
 }
 #bar button:hover label {
