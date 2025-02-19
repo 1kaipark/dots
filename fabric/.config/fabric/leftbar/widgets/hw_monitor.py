@@ -107,17 +107,17 @@ class HWMonitor(Box):
         self.cpu_temp_progress_bar.label.set_label(str(cpu_temp) + "°C")
 
         weather_fabricator = Fabricator(
-            interval=1000000,
+            interval=3600*1000,
             poll_from=get_relative_path("../scripts/fetch_weather.sh"),
             on_changed=self.update_weather_display,
         )
 
-        cpu_boost_fabricator = Fabricator(
-            interval=1000,
-            poll_from=get_relative_path("../scripts/hw_mon.sh"),
-            on_changed=lambda f, v: (self.cpu_temp_progress_bar.icon.set_label(Icons.BOOST.value)) if v==0 else (self.cpu_temp_progress_bar.icon.set_label(Icons.TEMP.value))
-        )
-
+#        cpu_boost_fabricator = Fabricator(
+#            interval=1000,
+#            poll_from=get_relative_path("../scripts/hw_mon.sh"),
+#            on_changed=lambda f, v: (self.cpu_temp_progress_bar.icon.set_label(Icons.BOOST.value)) if v==0 else (self.cpu_temp_progress_bar.icon.set_label(Icons.TEMP.value))
+#        )
+#
         # curr_weather = fetch_weather()
         return 1
 
