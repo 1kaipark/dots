@@ -15,8 +15,6 @@ from gi.repository import Gtk
 
 import psutil
 
-from loguru import logger
-
 from ..utils.weather import WEATHER_CODES
 
 class HWMonitor(Box):
@@ -114,11 +112,16 @@ class HWMonitor(Box):
             on_changed=self.update_weather_display,
         )
 
+        cpu_boost_fabricator = Fabricator(
+            interval=1000,
+            poll_from=get_relative_path("../scripts/hw_mon.sh"),
+            on_changed=lambda f, v: (self.cpu_temp_progress_bar.icon.set_label(Icons.BOOST.value)) if v==0 else (self.cpu_temp_progress_bar.icon.set_label(Icons.TEMP.value))
+        )
+
         # curr_weather = fetch_weather()
         return 1
 
     def update_weather_display(self, f, v):
-        logger.info(v)
         code, temp_C, desc = v.split("|")
         icon = WEATHER_CODES[code]
         self.weather_temp_label.set_label(icon + " " + temp_C + "°C")

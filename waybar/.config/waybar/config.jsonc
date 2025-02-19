@@ -26,7 +26,7 @@
   },
   "group/hw": {
     "orientation": "horizontal",
-    "modules": ["battery", "cpu", "custom/turbo"],
+    "modules": ["battery"],
   },
   "cpu": {
     "format": "<span color='#b2ccd6'>󰍛</span> {usage}%",
