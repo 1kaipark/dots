@@ -128,7 +128,7 @@ class ControlCenter(Window):
         )
         self.show_all()
 
-        invoke_repeater(1000, self.update_status)
+        invoke_repeater(2000, self.update_status)
 
     def update_status(self) -> bool:
         self.hwmon.update_status()

@@ -12,9 +12,24 @@
     "all-outputs": true,
     "format": "{icon}",
     "format-icons": {
-      "default": "",
-      "active": "",
+        "1": "一",
+        "2": "二",
+        "3": "三",
+        "4": "四",
+        "5": "五",
+        "6": "六",
+        "7": "七",
+        "8": "八",
+        "9": "九",
+        "10": "十"
     },
+    "persistent-workspaces": {
+        "1": [],
+        "2": [],
+        "3": [],
+        "4": [],
+    }
+
   },
 
   "hyprland/window": {

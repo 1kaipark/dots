@@ -13,10 +13,7 @@
 
 window#waybar {
   background: transparent;
-  margin: 5px 5px 5px 5px;
-}
-
-#custom-notification {
+  margin: 5px 0 5px 5px;
 }
 
 .modules-right {
@@ -61,7 +58,6 @@ window#waybar {
 #jack,
 #tray,
 #window,
-#workspaces,
 #clock,
 #pulseaudio {
 }
@@ -72,12 +68,15 @@ window#waybar {
   padding-top: 0;
 }
 
-
+#workspaces {
+    padding: 0;
+}
 #workspaces button {
     color: @text;
+    margin: 0;
 }
 #workspaces button.active {
-    color: @blue;
+    color: @red;
 }
 
 #clock{

@@ -20,7 +20,7 @@ class StatusBar(Window):
             title="top-left-bar",
             layer="top",
             anchor="left top",
-            margin="-35px 10px 10px 10px", # top right bottom left
+            margin="-35px 10px 10px 15px", # top right bottom left
             exclusivity="auto",
             visible=False,
             all_visible=False,
