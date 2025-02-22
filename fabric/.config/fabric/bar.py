@@ -11,6 +11,8 @@ from fabric.utils import (
 from leftbar.leftbar import ControlCenter
 from utils.monitors import get_all_monitors, get_current_gdk_monitor_id
 
+from leftbar.user.icons import Icons
+
 class StatusBar(Window):
     def __init__(
         self,
@@ -27,7 +29,8 @@ class StatusBar(Window):
         )
 
         self.start_menu = Button(
-            label=" ", 
+#            label=" ", 
+            label=Icons.SEND.value,
             on_clicked=self.show_panel,
             style="margin: 0px 0px 0px 10px; font-size: 14px",  # to center the icon glyph
         )

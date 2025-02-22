@@ -57,7 +57,7 @@ class Launchers(Gtk.Grid):
         
         self.launcher = Button(
             name="button-icon",
-            label=Icons.SEND.value,
+            label=Icons.LAUNCHER.value,
             on_clicked=lambda *_: exec_shell_command_async(Commands.LAUNCHER.value)
         )
 

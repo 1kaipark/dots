@@ -21,6 +21,7 @@ class Icons(Enum):
     TEMP = "󰔏"
     PIC = "󱧾"
     SEND = ""
+    LAUNCHER = "󱈇"
     SETTINGS = ""
     TERM = ""
     BROWSER = "󰖟"
