@@ -42,6 +42,7 @@ class Controls(Box):
         self.add(self.brightness_box)
 
         self.sync_with_audio()
+        self.brightness_box.scale.set_value(self.brightness.screen_brightness)
 
     def sync_with_audio(self):
         if not self.audio.speaker:
