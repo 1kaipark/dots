@@ -7,12 +7,13 @@ class ScaleControl(Box):
         self,
         label,
         button_callback=lambda *_: 1,
+        max_value: int = 100,
         **kwargs,
     ) -> None:
         super().__init__(orientation="h", **kwargs)
         self.scale = Scale(
             min_value=0,
-            max_value=100,
+            max_value=max_value,
             value=100,
             orientation="h",
         )

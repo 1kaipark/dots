@@ -19,7 +19,6 @@ class Controls(Box):
         self.audio.connect("notify::speaker", self.on_speaker_changed)
 
         self.brightness = Brightness().get_initial()
-        self.brightness.connect("screen", self.on_brightness_changed)
 
         self.volume_box = ScaleControl(
             label=Icons.VOL.value,
@@ -29,17 +28,20 @@ class Controls(Box):
 
         self.volume_box.scale.connect("value-changed", self.change_volume)
 
-        self.brightness_box = ScaleControl(label=Icons.BRIGHTNESS.value, name="scale-b")
+        self.brightness_box = ScaleControl(label=Icons.BRIGHTNESS.value, name="scale-b", max_value=255)
 
         self.brightness_box.scale.connect(
-            "value-changed", lambda *_: self.update_brightness()
+            "change-value", self.update_brightness
+        )
+
+        self.brightness.connect(
+            "screen", self.on_brightness_changed
         )
 
         self.add(self.volume_box)
         self.add(self.brightness_box)
 
         self.sync_with_audio()
-        self.update_brightness()
 
     def sync_with_audio(self):
         if not self.audio.speaker:
@@ -73,16 +75,11 @@ class Controls(Box):
         volume = round(self.audio.speaker.volume)
         self.volume_box.scale.set_value(volume)
 
-    def update_brightness(self, *_):
-        try:
-            norm_brightness = round(
-                (self.brightness.screen_brightness / self.brightness.max_screen) * 100
-            )
-            self.brightness_box.scale.set_value(norm_brightness)
-        except Exception as e:
-            logger.error("Brightness is fuked bro: {}".format(str(e)))
+    def update_brightness(self, _, __, moved_pos):
+        self.brightness.screen_brightness = moved_pos
+
 
     def on_brightness_changed(self, sender, value, *_):
-        norm_brightness = round((value / self.brightness.max_screen) * 100)
-        self.brightness_box.scale.set_value(norm_brightness)
+        logger.info(sender.screen_brightness)
+        self.brightness_box.scale.set_value(sender.screen_brightness)
 
