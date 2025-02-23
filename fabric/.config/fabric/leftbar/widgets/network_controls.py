@@ -6,7 +6,9 @@ from ..user.icons import Icons
 
 from .bluetooth import BluetoothWindow
 
-class NetworkControls(Box):
+from gi.repository import Gtk
+
+class NetworkControls(Gtk.Grid):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
@@ -23,8 +25,8 @@ class NetworkControls(Box):
 
         self.bluetooth_menu = BluetoothWindow(name="bluetooth-window")
 
-        self.add(self.wifi_button)
-        self.add(self.bt_button)
+        self.attach(self.wifi_button, 0, 0, 1, 1)
+        self.attach(self.bt_button, 0, 1, 1, 1)
 
         self.bluetooth_menu.bluetooth_connections.client.connect(
             "notify::enabled",
