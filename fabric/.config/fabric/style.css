@@ -41,8 +41,7 @@
     border-radius: 4px;
     border: solid 1px @text;
     padding: 33px;
-    margin: 12px 24px;
-
+    margin: 12px 36px;
 }
 
 #greeter-label {
@@ -81,6 +80,24 @@
     color: @text;
     margin: 6px;
 }
+#network-controls button:hover label {
+    color: @red;
+}
+#network-controls button {
+    border-radius: 6px;
+    background-color: var(--module-bg);
+    border: solid 1px @surface1;
+    min-width: 24px;
+    margin: 14px 2px;
+}
+#network-controls button label {
+    font-size: 20px;
+    text-shadow: 0px 0px 4px @blue;
+    color: @mantle;
+    margin: 0 4px;
+    margin-right: 8px;
+}
+
 #network-controls button:hover label {
     color: @red;
 }
@@ -270,6 +287,15 @@
     padding: 12px;
 }
 
+
+#bluetooth-window {
+    background-color: var(--bg);
+    border-radius: 12px;
+    border: solid 1px @surface1;
+}
+#bluetooth-window button:hover label {
+    color: @red;
+}
 
 
 #popup-window {

@@ -29,6 +29,9 @@ class Icons(Enum):
     NOTES = "󰠮"
     EDITOR = ""
     MUSIC = ""
+    WIFI = "󰤨"
+    BLUETOOTH = "󰂯"
+    NOTIFICATIONS = ""
 
     
 
