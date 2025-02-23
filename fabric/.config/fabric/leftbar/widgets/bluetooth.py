@@ -108,7 +108,7 @@ class BluetoothWindow(Window):
             anchor="center",
             layer="overlay",
             keyboard_mode="on-demand",
-            on_key_press_event=lambda _, event: self.destroy()
+            on_key_press_event=lambda _, event: self.hide()
             if event.keyval == 65307
             else True,  # handle ESC = exit
             **kwargs
