@@ -58,4 +58,4 @@ class PowerMenu(Gtk.Grid):
         self.add(self.shutdown)
         self.add(self.wallpaper_switch)
 
-        self.set_row_spacing(6)
+        self.set_column_spacing(18)
