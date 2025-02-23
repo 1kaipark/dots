@@ -41,17 +41,7 @@
     border-radius: 4px;
     border: solid 1px @text;
     padding: 33px;
-<<<<<<< HEAD
-<<<<<<< Updated upstream
     margin: 12px 36px;
-=======
-    margin: 12px 24px;
-
->>>>>>> Stashed changes
-=======
-    margin: 12px 24px;
-
->>>>>>> origin
 }
 
 #greeter-label {
@@ -62,15 +52,7 @@
     background-size: 400% 400%;
     font-size: 33px;
     color: @overlay0;
-<<<<<<< HEAD
-    margin: 0 12px 0 6px;
-=======
-<<<<<<< Updated upstream
     margin: 0 12px;
-=======
-    margin: 0 12px 0 6px;
->>>>>>> Stashed changes
->>>>>>> origin
     
 }
 #button-icon:hover label {
@@ -101,8 +83,6 @@
 #network-controls button:hover label {
     color: @red;
 }
-<<<<<<< HEAD
-
 #network-controls button {
     border-radius: 6px;
     background-color: var(--module-bg);
@@ -121,8 +101,6 @@
 #network-controls button:hover label {
     color: @red;
 }
-=======
->>>>>>> origin
 
 #label-green { color: @green; }
 #label-red { color: @red; }
@@ -385,4 +363,3 @@ window#bar {
 #bar #h {
     background-color: @red;
 }
-
