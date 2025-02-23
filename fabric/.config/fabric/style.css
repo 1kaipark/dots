@@ -38,7 +38,7 @@
     background-size: cover;
     min-height: 50px;
     border-radius: 4px;
-    border: solid 3px @text;
+    border: solid 1px @text;
     padding: 33px;
     margin: 12px 50px;
 }
