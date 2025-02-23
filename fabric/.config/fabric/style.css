@@ -53,11 +53,7 @@
     background-size: 400% 400%;
     font-size: 33px;
     color: @overlay0;
-<<<<<<< Updated upstream
     margin: 0 12px;
-=======
-    margin: 0 12px 0 6px;
->>>>>>> Stashed changes
     
 }
 #button-icon:hover label {
