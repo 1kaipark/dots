@@ -72,7 +72,8 @@ class ControlCenter(Window):
         #   \ V  V /  | || |_| | |_| | |___  | |  ___) |
         #    \_/\_/  |___|____/ \____|_____| |_| |____/
         #
-        self.network_controls = NetworkControls()
+        self.network_controls = NetworkControls(name="network-controls")
+        self.network_controls_box = Box(name="outer-box", children=[self.network_controls])
         self.profile = Profile(name="outer-box")
 
         self.power_menu = PowerMenu()
@@ -101,7 +102,7 @@ class ControlCenter(Window):
 
         self.header = Box(
             orientation="h",
-            children=[self.network_controls, self.profile, self.top_right],
+            children=[self.network_controls_box, self.profile, self.top_right],
         )
 
         self.row_1 = Box(orientation="h", children=[self.hwmon], name="outer-box")
