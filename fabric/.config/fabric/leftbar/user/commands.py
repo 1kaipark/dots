@@ -15,6 +15,8 @@ class Commands(Enum):
     NOTES = "obsidian --ozone-platform=wayland --ozone-platform-hint=auto --enable-features=UseOzonePlatform,WaylandWindowDecorations %U"
     EDITOR = "code --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform-hint=auto"
     MUSIC = "spotify-launcher"
+    WIFI_MENU = get_relative_path("../scripts/rofi-wifi-menu.sh")
+    BLUETOOTH = get_relative_path("../scripts/rofi-bluetooth.sh")
     NOTIFICATIONS = "swaync-client -t "
 
 
