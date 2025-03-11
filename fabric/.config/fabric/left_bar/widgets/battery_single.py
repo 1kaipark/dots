@@ -24,7 +24,7 @@ class BatterySingle(Box):
             size=size,
             name="battery",
             icon=Icons.BAT.value,
-            style="margin: 20px;"
+            style="margin: 12px;"
         )
 
         self.add(self.battery_progress_bar)
