@@ -8,7 +8,7 @@ from fabric.utils import (
 )
 
 
-from leftbar.leftbar import ControlCenter
+from leftbar.controlcenter import ControlCenter
 from utils.monitors import get_all_monitors, get_current_gdk_monitor_id
 
 from leftbar.user.icons import Icons

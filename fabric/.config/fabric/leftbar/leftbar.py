@@ -1,152 +1,84 @@
-"""
-a basic and minimal control center made in fabric/Gtk.
-
-TODO : desparately needs a refactor but who cares lmao
-"""
-
+from fabric import Application
 from fabric.widgets.box import Box
+from fabric.widgets.label import Label
+from fabric.widgets.overlay import Overlay
+from fabric.widgets.eventbox import EventBox
+from fabric.widgets.datetime import Button, DateTime
+from fabric.widgets.centerbox import CenterBox
+from fabric.system_tray.widgets import SystemTray
+from fabric.widgets.circularprogressbar import CircularProgressBar
 from fabric.widgets.wayland import WaylandWindow as Window
-
-from fabric.utils import invoke_repeater
-
-from .widgets.media import NowPlaying
-from .widgets.profile import Profile
-from .widgets.clock import Clock
-from .widgets.power_menu import PowerMenu
-from .widgets.hw_monitor import HWMonitor
-from .widgets.controls import Controls
-from .widgets.fetch import Fetch
-from .widgets.launchers import Launchers 
-from .widgets.quote_display import QuoteDisplay
-from .widgets.network_controls import NetworkControls
-# from .widgets.notis import NotificationCenter
-from .widgets.calendar import CalendarWidget
+from fabric.utils import (
+    get_relative_path,
+)
 
 
-from loguru import logger
+from .controlcenter import ControlCenter
 
-import gi
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
+from .user.icons import Icons
 
-
-"""
-CSS CLASSES
-* profile-pic
-* button-icon-large
-* button-icon-small-a through c
-* button-icon-smallest
-* clock-a
-* clock-b
-* clock-c
-* progress-bar-red, green, yellow, etc
-* label-red, ...
-* scale-a through c
-* label-a through c (colors)
-"""
-
-class ControlCenter(Window):
-    def __init__(self, **kwargs):
+class StatusBar(Window):
+    def __init__(
+        self,
+    ):
         super().__init__(
-            layer="overlay",
-            title="control-center",
+            name="bar",
+            title="top-left-bar",
+            layer="top",
             anchor="top left",
-            margin="8px 8px 8px 8px",
-            exclusivity="none",
+            margin="-35px 10px 10px 15px", # top right bottom left
+            exclusivity="auto",
             visible=False,
             all_visible=False,
-            keyboard_mode="on-demand",
-            on_key_press_event=lambda _, event: self.hide()
-            if event.keyval == 65307
-            else True,  # handle ESC = exit
-            **kwargs,
         )
 
-        #  ____  _____ _____ ___ _   _ _____
-        # |  _ \| ____|  ___|_ _| \ | | ____|
-        # | | | |  _| | |_   | ||  \| |  _|
-        # | |_| | |___|  _|  | || |\  | |___
-        # |____/|_____|_|   |___|_| \_|_____|
-        #
-        # __        _____ ____   ____ _____ _____ ____
-        # \ \      / /_ _|  _ \ / ___| ____|_   _/ ___|
-        #  \ \ /\ / / | || | | | |  _|  _|   | | \___ \
-        #   \ V  V /  | || |_| | |_| | |___  | |  ___) |
-        #    \_/\_/  |___|____/ \____|_____| |_| |____/
-        #
-        self.network_controls = NetworkControls(name="network-controls")
-        self.network_controls_box = Box(name="outer-box", children=[self.network_controls])
-        self.profile = Profile(name="outer-box")
-
-        self.power_menu = PowerMenu()
-
-        self.clock = Clock()
-
-        self.hwmon = HWMonitor(name="hw-mon")  # this goes in center_widgets
-
-        self.controls = Controls(name="controls")  # sliders for vol, brightness
-        self.calendar = CalendarWidget(name="calendar-widget")
-
-        self.fetch = Fetch(name="fetch")  # idea: cool neofetch polling
-
-        self.media = NowPlaying(
-            name="inner-box", max_len=20, cava_bars=22
-        )  
-        
-        self.launchers = Launchers(name="launchers")
-
-
-        self.top_right = Box(
-            children=[self.power_menu, self.clock],
-            orientation="v",
-            name="outer-box"
+        self.start_menu = Button(
+#            label=" ", 
+            label=Icons.SEND.value,
+            on_clicked=self.show_panel,
+            style="margin: 0px 0px 0px 10px; font-size: 14px",  # to center the icon glyph
         )
 
-        self.header = Box(
-            orientation="h",
-            children=[self.network_controls_box, self.profile, self.top_right],
-        )
+        self.system_tray = SystemTray(name="system-tray", spacing=4)
 
-        self.row_1 = Box(orientation="h", children=[self.hwmon], name="outer-box")
-        self.row_2 = Box(orientation="h", children=[Box(orientation="v", children=[self.controls, self.media]), self.calendar], name="outer-box")
-#        self.row_3 = Box(
-#            orientation="h", children=[self.fetch], name="outer-box"
-#        )
-#        self.row_4 = Box(
-#            orientation="h", children=[self.launchers], name="outer-box"
-#        )
+        self.date_time = DateTime(name="date-time", formatters=("%H:%M"), h_align="center", v_align="center")
+        self.cal_date = DateTime(name="date-time", formatters=("%a %m/%d/%Y"))
 
-        self.calendar = Gtk.Calendar(
-            visible=True,
-            hexpand=True,
-            halign=Gtk.Align.CENTER,
-        )
-
-#        self.notis = Box(
-#            orientation="h", children=[NotificationCenter(name="notification-center")], name="outer-box", h_expand=True
-#        )
-#
-        self.quote_display = QuoteDisplay(name="quote-display")
-        self.row_3 = Box(
-            orientation="h", children=[self.fetch, self.quote_display], name="outer-box"
-        )
-
-        self.widgets = [self.header, self.row_1, self.row_2, self.row_3]
-
-        self.add(
-            Box(
-                name="window",
+        self.children = CenterBox(
+            name="bar",
+            start_children=Box(
+                name="bar-inner",
+                spacing=4,
                 orientation="v",
-                spacing=24,
-                children=self.widgets,
+                children=[
+                    self.start_menu
+                ]
+            ),
+
+            center_children=Box(
+                name="bar-inner",
+                spacing=4,
+                orientation="v",
+                children=[
+                ]
+            ),
+            
+            end_children=Box(
+                name="bar-inner",
+                spacing=4,
+                orientation="v",
+                children=[
+                    self.system_tray
+                ]
             ),
         )
+
+
         self.show_all()
 
-        invoke_repeater(2000, self.update_status)
+if __name__ == "__main__":
+    bar = StatusBar()
+    app = Application("bar", bar)
+    app.set_stylesheet_from_file(get_relative_path("../style.css"))
 
-    def update_status(self) -> bool:
-        self.hwmon.update_status()
-        return 1
-
-
+    app.run()

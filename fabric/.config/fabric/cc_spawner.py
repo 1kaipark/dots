@@ -2,7 +2,7 @@ import os
 
 from fabric import Application
 from fabric.utils import get_relative_path
-from leftbar.leftbar import ControlCenter
+from leftbar.controlcenter import ControlCenter
 
 SCRIPT_NAME = "control-center"
 
