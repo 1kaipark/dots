@@ -9,14 +9,18 @@ class ScaleControl(Box):
         button_callback=lambda *_: 1,
         max_value: int = 100,
         initial_value: int = 100,
+        orientation = "h",
         **kwargs,
     ) -> None:
-        super().__init__(orientation="h", **kwargs)
+        super().__init__(orientation=orientation, **kwargs)
         self.scale = Scale(
             min_value=0,
             max_value=max_value,
             value=initial_value,
-            orientation="h",
+            orientation=orientation,
+            inverted=True if orientation=="v" else False,
+            v_align="start",
+            h_align="start",
         )
         self.label = Button(
             label=label,
@@ -25,4 +29,3 @@ class ScaleControl(Box):
 
         self.add(self.label)
         self.add(self.scale)
-

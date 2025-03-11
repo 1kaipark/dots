@@ -3,7 +3,7 @@ from fabric.widgets.label import Label
 from fabric.widgets.button import Button
 from fabric.widgets.centerbox import CenterBox 
 from fabric.widgets.box import Box 
-from fabric.utils import exec_shell_command_async
+from fabric.utils import exec_shell_command_async, invoke_repeater
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -149,6 +149,13 @@ class PopupWindow(WaylandWindow):
         )
         
         
+class TimedPopup(PopupWindow):
+    def __init__(self, parent, duration, **kwargs):
+        self.duration = duration 
+        super().__init__(parent=parent, **kwargs)
+
+        invoke_repeater(duration, lambda *_: self.destroy())
+
 class ConfirmationBox(PopupWindow):
     def __init__(self, parent, prompt: str, command: str, **kwargs):
         self.command = command

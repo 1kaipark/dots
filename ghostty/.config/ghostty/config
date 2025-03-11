@@ -1,6 +1,6 @@
 theme = catppuccin-frappe
 gtk-tabs-location = hidden
-font-family = JetBrainsMono Nerd Font
+font-family = Cousine Nerd Font
 font-size = 10
 scrollback-limit = 10_000
 window-theme = ghostty

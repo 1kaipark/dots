@@ -26,38 +26,28 @@ class HWMonitor(Box):
             icon=Icons.BAT.value,
         )
 
-        self.add(self.battery_progress_bar)
-
         self.cpu_progress_bar = CircularIndicator(
             name="cpu",
             icon=Icons.CPU.value,
         )
-
-        self.add(self.cpu_progress_bar)
 
         self.ram_progress_bar = CircularIndicator(
             name="ram",
             icon=Icons.MEM.value,
         )
 
-        self.add(self.ram_progress_bar)
-
         self.cpu_temp_progress_bar = CircularIndicator(
             name="temp",
             icon=Icons.TEMP.value,
         )
 
-        self.cpu_temp_label = Label(label="0°C", name="cpu-temp")
-        cpu_temp_box = Box(
-            children=[
-                Label(
-                    label=Icons.TEMP.value, name="label-red", style="font-size: 36px;"
-                ),
-                self.cpu_temp_label,
-            ]
-        )
+        progress_grid = Gtk.Grid()
+        progress_grid.attach(self.battery_progress_bar, 0, 0, 1, 1)
+        progress_grid.attach(self.cpu_progress_bar, 1, 0, 1, 1)
+        progress_grid.attach(self.ram_progress_bar, 2, 0, 1, 1)
+        progress_grid.attach(self.cpu_temp_progress_bar, 3, 0, 1, 1)
 
-        self.add(self.cpu_temp_progress_bar)
+        self.add(progress_grid)
 
         self.add(Separator())
 
@@ -107,7 +97,7 @@ class HWMonitor(Box):
         self.cpu_temp_progress_bar.label.set_label(str(cpu_temp) + "°C")
 
         weather_fabricator = Fabricator(
-            interval=3600*1000,
+            interval=3600*1000*4,
             poll_from=get_relative_path("../scripts/fetch_weather.sh"),
             on_changed=self.update_weather_display,
         )

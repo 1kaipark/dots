@@ -29,15 +29,15 @@ class NetworkControls(Gtk.Grid):
             style="background-color: @blue;"
         )
 
-        self.notis_button = Button(
-            label=Icons.NOTIFICATIONS.value,
-            on_clicked=self.toggle_notifications,
+        self.launcher_button = Button(
+            label=Icons.LAUNCHER.value,
+            on_clicked=self.toggle_launcher,
             style="background-color: @yellow;"
         )
 
         self.attach(self.wifi_button, 0, 0, 1, 1)
         self.attach(self.bt_button, 0, 1, 1, 1)
-        self.attach(self.notis_button, 0, 2, 1, 1)
+        self.attach(self.launcher_button, 0, 2, 1, 1)
 
 #        self.bluetooth_menu = BluetoothWindow(name="bluetooth-window")
 #        self.bluetooth_menu.bluetooth_connections.client.connect(
@@ -56,6 +56,6 @@ class NetworkControls(Gtk.Grid):
 #        else: self.bluetooth_menu.show()
         exec_shell_command_async(Commands.BLUETOOTH.value)
 
-    def toggle_notifications(self, *_): 
-        exec_shell_command_async(Commands.NOTIFICATIONS.value)
+    def toggle_launcher(self, *_): 
+        exec_shell_command_async(Commands.LAUNCHER.value)
 

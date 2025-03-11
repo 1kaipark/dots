@@ -3,7 +3,7 @@ configuration {
   display-drun: "";
   show-icons: true;
   drun-display-format: "{icon}  {name}";
-  font: "JetBrainsMono Nerd Font 10";
+  font: "Cousine Nerd Font 10";
 }
 
 @theme "/dev/null"

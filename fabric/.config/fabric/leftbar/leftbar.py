@@ -19,6 +19,8 @@ from .widgets.fetch import Fetch
 from .widgets.launchers import Launchers 
 from .widgets.quote_display import QuoteDisplay
 from .widgets.network_controls import NetworkControls
+# from .widgets.notis import NotificationCenter
+from .widgets.calendar import CalendarWidget
 
 
 from loguru import logger
@@ -83,16 +85,16 @@ class ControlCenter(Window):
         self.hwmon = HWMonitor(name="hw-mon")  # this goes in center_widgets
 
         self.controls = Controls(name="controls")  # sliders for vol, brightness
+        self.calendar = CalendarWidget(name="calendar-widget")
 
         self.fetch = Fetch(name="fetch")  # idea: cool neofetch polling
 
         self.media = NowPlaying(
-            name="inner-box", max_len=25, cava_bars=27
+            name="inner-box", max_len=20, cava_bars=22
         )  
         
         self.launchers = Launchers(name="launchers")
 
-        self.quote_display = QuoteDisplay(name="quote-display")
 
         self.top_right = Box(
             children=[self.power_menu, self.clock],
@@ -106,19 +108,30 @@ class ControlCenter(Window):
         )
 
         self.row_1 = Box(orientation="h", children=[self.hwmon], name="outer-box")
-        self.row_2 = Box(orientation="h", children=[self.controls], name="outer-box")
+        self.row_2 = Box(orientation="h", children=[Box(orientation="v", children=[self.controls, self.media]), self.calendar], name="outer-box")
+#        self.row_3 = Box(
+#            orientation="h", children=[self.fetch], name="outer-box"
+#        )
+#        self.row_4 = Box(
+#            orientation="h", children=[self.launchers], name="outer-box"
+#        )
+
+        self.calendar = Gtk.Calendar(
+            visible=True,
+            hexpand=True,
+            halign=Gtk.Align.CENTER,
+        )
+
+#        self.notis = Box(
+#            orientation="h", children=[NotificationCenter(name="notification-center")], name="outer-box", h_expand=True
+#        )
+#
+        self.quote_display = QuoteDisplay(name="quote-display")
         self.row_3 = Box(
-            orientation="h", children=[self.fetch, self.media], name="outer-box"
-        )
-        self.row_4 = Box(
-            orientation="h", children=[self.launchers], name="outer-box"
+            orientation="h", children=[self.fetch, self.quote_display], name="outer-box"
         )
 
-        self.row_5 = Box(
-            orientation="h", children=[self.quote_display], name="outer-box"
-        )
-
-        self.widgets = [self.header, self.row_1, self.row_2, self.row_3, self.row_4, self.row_5]
+        self.widgets = [self.header, self.row_1, self.row_2, self.row_3]
 
         self.add(
             Box(
