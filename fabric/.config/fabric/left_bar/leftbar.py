@@ -5,7 +5,6 @@ from fabric.widgets.overlay import Overlay
 from fabric.widgets.eventbox import EventBox
 from fabric.widgets.datetime import Button, DateTime
 from fabric.widgets.centerbox import CenterBox
-from fabric.system_tray.widgets import SystemTray
 from fabric.widgets.circularprogressbar import CircularProgressBar
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.utils import (
@@ -21,6 +20,7 @@ from controlcenter import ControlCenter
 from user.icons import Icons
 from user.commands import Commands
 from widgets.battery_single import BatterySingle
+from widgets.systray import SystemTray
 
 class StatusBar(Window):
     def __init__(
@@ -31,7 +31,7 @@ class StatusBar(Window):
             title="top-left-bar",
             layer="top",
             anchor="top left bottom left",
-            margin="10px 10px 10px 15px", # top right bottom left
+            margin="10px 0px 10px 15px", # top right bottom left
             exclusivity="auto",
             visible=False,
             all_visible=False,
@@ -51,13 +51,14 @@ class StatusBar(Window):
         self.workspaces = Workspaces(
              name="workspaces",
              orientation="v",
+             h_align="center",
              spacing=4,
              buttons_factory=lambda ws_id: WorkspaceButton(id=ws_id, label=['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'][ws_id - 1]),
         )
  
-        self.battery = BatterySingle(name="battery")
+        self.battery = BatterySingle(name="battery", h_align="center")
 
-        self.system_tray = SystemTray(name="system-tray", spacing=4, orientation="v")
+        self.system_tray = Box(name="system-tray", children=[SystemTray(pixel_size=18)], h_align="center")
         self.date_time = Box(
             orientation="v",
             name="bar-clock",
