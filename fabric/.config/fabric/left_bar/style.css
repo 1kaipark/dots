@@ -443,6 +443,107 @@ window#bar {
 #bar #battery label {
     color: @green;
 }
+/* system tray */
+#system-tray {
+    padding: 2px 4px;
+    background-color: var(--module-bg);
+}
 
+/* menu and menu items (written for the system tray) */
+menu {
+    border: solid 2px;
+    border-radius: 10px;
+    border-color: @surface0;
+    background-color: var(--module-bg);
+}
 
+menu>menuitem {
+    border-radius: 0px;
+    background-color: var(--module-bg);
+    margin-left: 2px;
+    margin-right: 2px;
+}
 
+menu>menuitem:first-child {
+    margin-top: 1px;
+    border-radius: 8px 8px 0px 0px;
+}
+
+menu>menuitem:last-child {
+    margin-bottom: 1px;
+    border-radius: 0px 0px 8px 8px;
+}
+
+menu>menuitem:hover label {
+    color: @red;
+}
+/* system tray */
+#system-tray {
+    padding: 2px 4px;
+    background-color: var(--module-bg);
+}
+
+/* menu and menu items (written for the system tray) */
+menu {
+    border: solid 2px;
+    border-radius: 10px;
+    border-color: var(--border-color);
+    background-color: var(--window-bg);
+}
+
+menu>menuitem {
+    border-radius: 0px;
+    background-color: var(--module-bg);
+    padding: 6px;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+menu>menuitem:first-child {
+    margin-top: 1px;
+    border-radius: 8px 8px 0px 0px;
+}
+
+menu>menuitem:last-child {
+    margin-bottom: 1px;
+    border-radius: 0px 0px 8px 8px;
+}
+
+menu>menuitem:hover {
+    background-color: var(--border-color);
+}
+/* system tray */
+#system-tray {
+    padding: 2px 4px;
+    background-color: var(--module-bg);
+}
+
+/* menu and menu items (written for the system tray) */
+menu {
+    border: solid 2px;
+    border-radius: 10px;
+    border-color: var(--border-color);
+    background-color: var(--window-bg);
+}
+
+menu>menuitem {
+    border-radius: 0px;
+    background-color: var(--module-bg);
+    padding: 6px;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+menu>menuitem:first-child {
+    margin-top: 1px;
+    border-radius: 8px 8px 0px 0px;
+}
+
+menu>menuitem:last-child {
+    margin-bottom: 1px;
+    border-radius: 0px 0px 8px 8px;
+}
+
+menu>menuitem:hover {
+    background-color: var(--border-color);
+}
