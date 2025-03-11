@@ -356,7 +356,7 @@ window#bar {
     font-size: 14px;
     font-family: "Cousine Nerd Font";
     padding: 3px 6px 6px 0px;
-    border-radius: 20px;
+    border-radius: 16px;
     background-color: alpha(@crust, 0.9);
     text-shadow: none;
 }
