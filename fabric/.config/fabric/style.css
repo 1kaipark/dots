@@ -40,7 +40,7 @@
     border-radius: 4px;
     border: solid 1px @text;
     padding: 33px;
-    margin: 12px 24px;
+    margin: 12px 36px;
 }
 
 #greeter-label {
