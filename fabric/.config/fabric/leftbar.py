@@ -59,6 +59,7 @@ class StatusBar(Window):
         self.battery = BatterySingle(name="battery", h_align="center")
 
         self.system_tray = Box(name="system-tray", children=[SystemTray(pixel_size=18)], h_align="center")
+
         self.date_time = Box(
             orientation="v",
             name="bar-clock",
@@ -99,6 +100,7 @@ class StatusBar(Window):
                 spacing=4,
                 orientation="v",
                 children=[
+                    self.date_time,
                 ]
             ),
 
@@ -109,7 +111,6 @@ class StatusBar(Window):
                 orientation="v",
                 children=[
                     self.battery,
-                    self.date_time,
                     self.system_tray,
                     self.notification_button,
                 ]
