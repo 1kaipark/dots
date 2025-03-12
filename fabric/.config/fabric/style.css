@@ -13,7 +13,7 @@
     all: unset;
     color: var(--text);
     font-size: 14px;
-    font-family: "Cousine Nerd Font", sans-serif;
+    font-family: "GeistMono Nerd Font", sans-serif;
     text-shadow: 8px 8px 12px var(--shadow);
 }
 
@@ -60,14 +60,14 @@
 #clock-a label {
     font-size: 36px;
     margin-top: 12px;
-    font-family: "Iosevka Nerd Font", bold;
+    font-family: "RobotoMono Nerd Font", bold;
 }
 
 #clock-b label {
     font-size: 24px;
     color: @subtext0;
     margin: 0 72px;
-    font-family: "Iosevka Nerd Font", sans-serif;
+    font-family: "RobotoMono Nerd Font", sans-serif;
 }
 
 #network-controls button {
@@ -354,7 +354,7 @@ window#bar {
     all: unset;
     border: none;
     font-size: 14px;
-    font-family: "Cousine Nerd Font";
+    font-family: "GeistMono Nerd Font";
     padding: 3px 6px 6px 0px;
     border-radius: 16px;
     background-color: alpha(@crust, 0.9);

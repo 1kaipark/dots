@@ -156,14 +156,18 @@ class Todos(Box):
     def move_todo_up(self, index):
         if index > 0:
             self._todos[index], self._todos[index - 1] = self._todos[index - 1], self._todos[index]
-            self.refresh_ui()
-            self.cache_todos()
+        else:
+            self._todos = self._todos[1:] + [self._todos[index]]
+        self.refresh_ui()
+        self.cache_todos()
 
     def move_todo_down(self, index):
         if index < len(self._todos) - 1:
             self._todos[index], self._todos[index + 1] = self._todos[index + 1], self._todos[index]
-            self.refresh_ui()
-            self.cache_todos()
+        else:
+            self._todos = [self._todos[index]] + self._todos[:-1]
+        self.refresh_ui()
+        self.cache_todos()
 
     def refresh_ui(self):
         for child in self.todo_list.get_children():
