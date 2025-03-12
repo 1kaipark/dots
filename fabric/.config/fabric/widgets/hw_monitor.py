@@ -113,7 +113,10 @@ class HWMonitor(Box):
 
     def update_weather_display(self, f, v):
         code, temp_C, desc = v.split("|")
-        icon = WEATHER_CODES[code]
+        try:
+            icon = WEATHER_CODES[code]
+        except KeyError:
+            1
         self.weather_temp_label.set_label(icon + " " + temp_C + "°C")
         self.weather_desc_label.set_label(desc)
 

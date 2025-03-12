@@ -110,8 +110,8 @@ class StatusBar(Window):
                 spacing=4,
                 orientation="v",
                 children=[
-                    self.battery,
                     self.system_tray,
+                    self.battery,
                     self.notification_button,
                 ]
             ),

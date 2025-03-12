@@ -21,6 +21,7 @@ from widgets.quote_display import QuoteDisplay
 from widgets.network_controls import NetworkControls
 # from widgets.notis import NotificationCenter
 from widgets.calendar import CalendarWidget
+from widgets.todos import Todos
 
 
 from loguru import logger
@@ -46,6 +47,17 @@ CSS CLASSES
 """
 
 class ControlCenter(Window):
+
+    def on_key_press(self, _, event):
+        if event.keyval == 65307:  # ESC key
+            focused_widget = self.get_focus()
+            if not isinstance(focused_widget, Gtk.Entry):
+                self.hide()
+                return True  
+        return False  
+
+    
+
     def __init__(self, **kwargs):
         super().__init__(
             layer="overlay",
@@ -56,11 +68,10 @@ class ControlCenter(Window):
             visible=False,
             all_visible=False,
             keyboard_mode="on-demand",
-            on_key_press_event=lambda _, event: self.hide()
-            if event.keyval == 65307
-            else True,  # handle ESC = exit
             **kwargs,
         )
+
+        self.connect("key-press-event", self.on_key_press)
 
         #  ____  _____ _____ ___ _   _ _____
         # |  _ \| ____|  ___|_ _| \ | | ____|
@@ -125,13 +136,18 @@ class ControlCenter(Window):
 #        self.notis = Box(
 #            orientation="h", children=[NotificationCenter(name="notification-center")], name="outer-box", h_expand=True
 #        )
-#
-        self.quote_display = QuoteDisplay(name="quote-display")
+        
+        self.todos = Todos(name="todos", h_expand=True, size=(-1, 120))
         self.row_3 = Box(
+            orientation="h", children=[self.todos], name="outer-box", h_expand=True
+        )
+        self.quote_display = QuoteDisplay(name="quote-display")
+        self.row_4 = Box(
             orientation="h", children=[self.fetch, self.quote_display], name="outer-box"
         )
 
-        self.widgets = [self.header, self.row_1, self.row_2, self.row_3]
+
+        self.widgets = [self.header, self.row_1, self.row_2, self.row_3, self.row_4]
 
         self.add(
             Box(

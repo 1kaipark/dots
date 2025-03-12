@@ -481,3 +481,37 @@ menu>menuitem:hover label {
     background-color: var(--module-bg);
 }
 
+
+scrollbar {
+    background-color: @crust;
+    border-radius: 12px;
+    min-width: 4px;
+}
+slider {
+    background-color: @surface1;
+    border-radius: 12px;
+    min-width: 4px;
+}
+#todos button:hover label {
+    color: @red;
+}
+#todos #todos-scrollable {
+    min-height: 72px;
+    min-width: 480px;
+    border-radius: 6px;
+    background-color: @crust;
+    padding: 12px;
+}
+#todo-entry{ 
+    padding: 3px;
+    border-radius: 3px;
+    border: solid 1px @surface0;
+}
+#todos .done {
+    color: @surface0;
+}
+
+#todos checkbutton {
+    background-color: @crust;
+    border: 1px solid @text;
+}
