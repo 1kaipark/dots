@@ -1,10 +1,10 @@
-from fabric import Application 
+from fabric import Application
 from fabric.widgets.box import Box
 from fabric.widgets.wayland import WaylandWindow
 import gi
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Pango, GLib
+from gi.repository import Gtk, GLib
 
 from fabric.utils import get_relative_path
 
@@ -12,10 +12,10 @@ from loguru import logger
 
 TODOS_CACHE_PATH = GLib.get_user_cache_dir() + "/todos.txt"
 
-class Todos(Box):
 
+class Todos(Box):
     def on_key_press(self, _, event):
-        if event.keyval == 65307:
+        if event.keyval == 65307:  # Escape key
             print("Esc in entry!!")
             self.entry.set_text("")
             self.add_button.grab_focus()
@@ -28,17 +28,12 @@ class Todos(Box):
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         self.add(vbox)
 
+        # Entry and Add button
         hbox = Gtk.Box(spacing=6)
         self.entry = Gtk.Entry(name="todo-entry")
         self.entry.set_placeholder_text("todos")
-        self.entry.connect(
-            "activate",
-            self.add_todo
-        )
-        self.entry.connect(
-            "key-press-event",
-            self.on_key_press
-        )
+        self.entry.connect("activate", self.add_todo)
+        self.entry.connect("key-press-event", self.on_key_press)
 
         self.add_button = Gtk.Button(label="add")
         self.add_button.connect("clicked", self.add_todo)
@@ -46,6 +41,7 @@ class Todos(Box):
         hbox.pack_start(self.add_button, False, False, 0)
         vbox.pack_start(hbox, False, False, 0)
 
+        # Scrolled window for the todo list
         self.scrolled_window = Gtk.ScrolledWindow(name="todos-scrollable")
         self.scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         vbox.pack_start(self.scrolled_window, True, True, 0)
@@ -65,27 +61,38 @@ class Todos(Box):
         self.add_button.grab_focus()
         todo_text = self.entry.get_text().strip()
         if todo_text:
-            self._todos.append((todo_text, False))  # Initialize completion state to False
+            self._todos.append((todo_text, False))  
             self.cache_todos()
-            self._add_todo_to_ui(todo_text, False)
+            self._add_todo_to_ui(todo_text, False, len(self._todos) - 1)
             self.entry.set_text("")
 
-    def _add_todo_to_ui(self, todo_text, completed):
+    def _add_todo_to_ui(self, todo_text, completed, index):
         hbox = Gtk.Box(spacing=6)
         checkbox = Gtk.CheckButton(active=completed)
         label = Gtk.Label(label=todo_text, xalign=0, name="todo-label")
         label.set_xalign(0)
+
         if completed: 
             label.get_style_context().add_class("done")
-        remove_button = Gtk.Button(label="X")
+
+
+        up_button = Gtk.Button(label="")
+        up_button.connect("clicked", self.move_todo_up, index)
+
+        down_button = Gtk.Button(label="")
+        down_button.connect("clicked", self.move_todo_down, index)
+
+        remove_button = Gtk.Button(label="")
         remove_button.connect("clicked", self.remove_todo, hbox, todo_text)
-        
+
         checkbox.connect("toggled", self.toggle_todo, label, todo_text)
-        
+
         hbox.pack_start(checkbox, False, False, 0)
         hbox.pack_start(label, True, True, 0)
+        hbox.pack_start(up_button, False, False, 0)
+        hbox.pack_start(down_button, False, False, 0)
         hbox.pack_start(remove_button, False, False, 0)
-        
+
         self.todo_list.pack_start(hbox, False, False, 0)
         self.todo_list.show_all()
 
@@ -95,8 +102,7 @@ class Todos(Box):
             style_context.add_class("done")
         else:
             style_context.remove_class("done")
-        
-        # Update the completion state in the _todos list
+
         for i, (text, completed) in enumerate(self._todos):
             if text == todo_text:
                 self._todos[i] = (text, checkbox.get_active())
@@ -111,6 +117,24 @@ class Todos(Box):
         except ValueError:
             logger.error("[TODOS] Error removing todo. Just clear all tbh")
         self.cache_todos()
+
+    def move_todo_up(self, widget, index):
+        if index > 0:
+            self._todos[index], self._todos[index - 1] = self._todos[index - 1], self._todos[index]
+            self.refresh_ui()
+            self.cache_todos()
+
+    def move_todo_down(self, widget, index):
+        if index < len(self._todos) - 1:
+            self._todos[index], self._todos[index + 1] = self._todos[index + 1], self._todos[index]
+            self.refresh_ui()
+            self.cache_todos()
+
+    def refresh_ui(self):
+        for child in self.todo_list.get_children():
+            self.todo_list.remove(child)
+        for index, (todo_text, completed) in enumerate(self._todos):
+            self._add_todo_to_ui(todo_text, completed, index)
 
     def clear_todos(self, widget):
         for child in self.todo_list.get_children():
@@ -133,9 +157,9 @@ class Todos(Box):
                 for line in cache.readlines():
                     todo_text, completed = line.strip().split("|")
                     self._todos.append((todo_text, completed == "True"))
-                    self._add_todo_to_ui(todo_text, completed == "True")
+                self.refresh_ui()
         except Exception as e:
-            logger.error("[TODOS] "+str(e))
+            logger.error("[TODOS] " + str(e))
 
 
 if __name__ == "__main__":
@@ -144,7 +168,7 @@ if __name__ == "__main__":
         WaylandWindow(
             name="window",
             anchor="top right",
-            child=Box(children=Todos(name="todos"),name="outer-box"),
+            child=Box(children=Todos(name="todos"), name="outer-box"),
             visible=True,
             all_visible=True,
             keyboard_mode="on-demand",
@@ -152,3 +176,5 @@ if __name__ == "__main__":
     )
     app.set_stylesheet_from_file(get_relative_path("./style.css"))
     app.run()
+
+
