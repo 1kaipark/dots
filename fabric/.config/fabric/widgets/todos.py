@@ -57,48 +57,57 @@ class Todos(Box):
         self.clear_button.connect("clicked", self.clear_todos)
         vbox.pack_end(self.clear_button, False, False, 0)
 
-        self._todos: list[str] = []
+        self._todos: list[tuple[str, bool]] = []  # (todo_text, completed_state)
 
         self.load_from_cache()
 
     def add_todo(self, widget):
         self.add_button.grab_focus()
         todo_text = self.entry.get_text().strip()
-        self._todos.append(todo_text)
-
-        self.cache_todos()
-
         if todo_text:
-            todo_text = todo_text.strip()
-            hbox = Gtk.Box(spacing=6)
-            checkbox = Gtk.CheckButton()
-            label = Gtk.Label(label=todo_text, xalign=0, name="todo-label")
-            label.set_xalign(0)
-            remove_button = Gtk.Button(label="X")
-            remove_button.connect("clicked", self.remove_todo, hbox, todo_text)
-            
-            checkbox.connect("toggled", self.toggle_todo, label)
-            
-            hbox.pack_start(checkbox, False, False, 0)
-            hbox.pack_start(label, True, True, 0)
-            hbox.pack_start(remove_button, False, False, 0)
-            
-            self.todo_list.pack_start(hbox, False, False, 0)
-            self.todo_list.show_all()
+            self._todos.append((todo_text, False))  # Initialize completion state to False
+            self.cache_todos()
+            self._add_todo_to_ui(todo_text, False)
             self.entry.set_text("")
 
-    def toggle_todo(self, checkbox, label):
+    def _add_todo_to_ui(self, todo_text, completed):
+        hbox = Gtk.Box(spacing=6)
+        checkbox = Gtk.CheckButton(active=completed)
+        label = Gtk.Label(label=todo_text, xalign=0, name="todo-label")
+        label.set_xalign(0)
+        if completed: 
+            label.get_style_context().add_class("done")
+        remove_button = Gtk.Button(label="X")
+        remove_button.connect("clicked", self.remove_todo, hbox, todo_text)
+        
+        checkbox.connect("toggled", self.toggle_todo, label, todo_text)
+        
+        hbox.pack_start(checkbox, False, False, 0)
+        hbox.pack_start(label, True, True, 0)
+        hbox.pack_start(remove_button, False, False, 0)
+        
+        self.todo_list.pack_start(hbox, False, False, 0)
+        self.todo_list.show_all()
+
+    def toggle_todo(self, checkbox, label, todo_text):
         style_context = label.get_style_context()
         if checkbox.get_active():
             style_context.add_class("done")
         else:
             style_context.remove_class("done")
+        
+        # Update the completion state in the _todos list
+        for i, (text, completed) in enumerate(self._todos):
+            if text == todo_text:
+                self._todos[i] = (text, checkbox.get_active())
+                break
+        self.cache_todos()
 
     def remove_todo(self, widget, todo_widget, todo_text):
         self.todo_list.remove(todo_widget)
         logger.info(todo_text)
         try:
-            self._todos.remove(todo_text)
+            self._todos = [(text, completed) for (text, completed) in self._todos if text != todo_text]
         except ValueError:
             logger.error("[TODOS] Error removing todo. Just clear all tbh")
         self.cache_todos()
@@ -112,36 +121,21 @@ class Todos(Box):
     def cache_todos(self):
         try:
             with open(TODOS_CACHE_PATH, "w+") as cache:
-                cache.writelines([todo + "\n" for todo in self._todos])
+                for todo_text, completed in self._todos:
+                    cache.write(f"{todo_text}|{completed}\n")
         except Exception as e:
             logger.error("[TODOS] " + str(e))
 
     def load_from_cache(self):
         try:
             with open(TODOS_CACHE_PATH, "r") as cache:
-                self._todos = [todo_text.strip() for todo_text in cache.readlines()]
-                logger.info(self._todos)
+                self._todos = []
+                for line in cache.readlines():
+                    todo_text, completed = line.strip().split("|")
+                    self._todos.append((todo_text, completed == "True"))
+                    self._add_todo_to_ui(todo_text, completed == "True")
         except Exception as e:
             logger.error("[TODOS] "+str(e))
-
-        for todo_text in self._todos:
-            todo_text = todo_text.strip()
-            hbox = Gtk.Box(spacing=6)
-            checkbox = Gtk.CheckButton()
-            label = Gtk.Label(label=todo_text, xalign=0, name="todo-label")
-            label.set_xalign(0)
-            remove_button = Gtk.Button(label="X")
-            remove_button.connect("clicked", self.remove_todo, hbox, todo_text)
-            
-            checkbox.connect("toggled", self.toggle_todo, label)
-            
-            hbox.pack_start(checkbox, False, False, 0)
-            hbox.pack_start(label, True, True, 0)
-            hbox.pack_start(remove_button, False, False, 0)
-            
-            self.todo_list.pack_start(hbox, False, False, 0)
-            self.todo_list.show_all()
-            self.entry.set_text("")
 
 
 if __name__ == "__main__":

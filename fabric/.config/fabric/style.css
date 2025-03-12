@@ -496,8 +496,8 @@ slider {
     color: @red;
 }
 #todos #todos-scrollable {
-    min-height: 72px;
-    min-width: 480px;
+    min-height: 84px;
+    min-width: 460px;
     border-radius: 6px;
     background-color: @crust;
     padding: 12px;
