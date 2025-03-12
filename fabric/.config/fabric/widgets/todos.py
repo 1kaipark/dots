@@ -9,8 +9,71 @@ from gi.repository import Gtk, GLib
 from fabric.utils import get_relative_path
 
 from loguru import logger
+from typing import Callable
 
 TODOS_CACHE_PATH = GLib.get_user_cache_dir() + "/todos.txt"
+
+
+class TodoItem(Box):
+    def __init__(
+        self,
+        todo_text: str,
+        done: bool,
+        index: int,
+        parent_move_up: Callable,
+        parent_move_down: Callable,
+        parent_remove: Callable,
+        parent_toggle: Callable,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+        self._done = done
+        self._index = index
+        self._parent_move_up = parent_move_up
+        self._parent_move_down = parent_move_down
+        self._parent_remove = parent_remove
+        self._parent_toggle = parent_toggle
+
+        self.checkbox = Gtk.CheckButton(active=self._done)
+        self.label = Gtk.Label(label=todo_text, xalign=0, name="todo-label")
+        self.label.set_xalign(0)
+
+        if self._done:
+            self.label.get_style_context().add_class("done")
+
+        self.checkbox.connect("toggled", self.toggle)
+
+        self.up_button = Gtk.Button(label="")
+        self.up_button.connect("clicked", self.on_up_clicked)
+
+        self.down_button = Gtk.Button(label="")
+        self.down_button.connect("clicked", self.on_down_clicked)
+
+        self.remove_button = Gtk.Button(label="")
+        self.remove_button.connect("clicked", self.on_remove_clicked)
+
+        self.pack_start(self.checkbox, False, False, 0)
+        self.pack_start(self.label, True, True, 0)
+        self.pack_start(self.up_button, False, False, 0)
+        self.pack_start(self.down_button, False, False, 0)
+        self.pack_start(self.remove_button, False, False, 0)
+
+    def toggle(self, checkbox):
+        self._done = checkbox.get_active()
+        if self._done:
+            self.label.get_style_context().add_class("done")
+        else:
+            self.label.get_style_context().remove_class("done")
+        self._parent_toggle(self._index, self._done)
+
+    def on_up_clicked(self, button):
+        self._parent_move_up(self._index)
+
+    def on_down_clicked(self, button):
+        self._parent_move_down(self._index)
+
+    def on_remove_clicked(self, button):
+        self._parent_remove(self._index)
 
 
 class Todos(Box):
@@ -49,6 +112,7 @@ class Todos(Box):
         self.todo_list = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, name="todos-list")
         self.scrolled_window.add(self.todo_list)
 
+        # Clear todos button
         self.clear_button = Gtk.Button(label="clear todos")
         self.clear_button.connect("clicked", self.clear_todos)
         vbox.pack_end(self.clear_button, False, False, 0)
@@ -61,70 +125,41 @@ class Todos(Box):
         self.add_button.grab_focus()
         todo_text = self.entry.get_text().strip()
         if todo_text:
-            self._todos.append((todo_text, False))  
+            self._todos.append((todo_text, False))  # Initialize completion state to False
             self.cache_todos()
             self._add_todo_to_ui(todo_text, False, len(self._todos) - 1)
             self.entry.set_text("")
 
     def _add_todo_to_ui(self, todo_text, completed, index):
-        hbox = Gtk.Box(spacing=6)
-        checkbox = Gtk.CheckButton(active=completed)
-        label = Gtk.Label(label=todo_text, xalign=0, name="todo-label")
-        label.set_xalign(0)
-
-        if completed: 
-            label.get_style_context().add_class("done")
-
-
-        up_button = Gtk.Button(label="")
-        up_button.connect("clicked", self.move_todo_up, index)
-
-        down_button = Gtk.Button(label="")
-        down_button.connect("clicked", self.move_todo_down, index)
-
-        remove_button = Gtk.Button(label="")
-        remove_button.connect("clicked", self.remove_todo, hbox, todo_text)
-
-        checkbox.connect("toggled", self.toggle_todo, label, todo_text)
-
-        hbox.pack_start(checkbox, False, False, 0)
-        hbox.pack_start(label, True, True, 0)
-        hbox.pack_start(up_button, False, False, 0)
-        hbox.pack_start(down_button, False, False, 0)
-        hbox.pack_start(remove_button, False, False, 0)
-
-        self.todo_list.pack_start(hbox, False, False, 0)
+        todo_item = TodoItem(
+            todo_text=todo_text,
+            done=completed,
+            index=index,
+            parent_move_up=self.move_todo_up,
+            parent_move_down=self.move_todo_down,
+            parent_remove=self.remove_todo,
+            parent_toggle=self.toggle_todo,
+            spacing=6,
+        )
+        self.todo_list.pack_start(todo_item, False, False, 0)
         self.todo_list.show_all()
 
-    def toggle_todo(self, checkbox, label, todo_text):
-        style_context = label.get_style_context()
-        if checkbox.get_active():
-            style_context.add_class("done")
-        else:
-            style_context.remove_class("done")
-
-        for i, (text, completed) in enumerate(self._todos):
-            if text == todo_text:
-                self._todos[i] = (text, checkbox.get_active())
-                break
+    def toggle_todo(self, index, done):
+        self._todos[index] = (self._todos[index][0], done)
         self.cache_todos()
 
-    def remove_todo(self, widget, todo_widget, todo_text):
-        self.todo_list.remove(todo_widget)
-        logger.info(todo_text)
-        try:
-            self._todos = [(text, completed) for (text, completed) in self._todos if text != todo_text]
-        except ValueError:
-            logger.error("[TODOS] Error removing todo. Just clear all tbh")
+    def remove_todo(self, index):
+        self._todos.pop(index)
+        self.refresh_ui()
         self.cache_todos()
 
-    def move_todo_up(self, widget, index):
+    def move_todo_up(self, index):
         if index > 0:
             self._todos[index], self._todos[index - 1] = self._todos[index - 1], self._todos[index]
             self.refresh_ui()
             self.cache_todos()
 
-    def move_todo_down(self, widget, index):
+    def move_todo_down(self, index):
         if index < len(self._todos) - 1:
             self._todos[index], self._todos[index + 1] = self._todos[index + 1], self._todos[index]
             self.refresh_ui()
@@ -176,5 +211,3 @@ if __name__ == "__main__":
     )
     app.set_stylesheet_from_file(get_relative_path("./style.css"))
     app.run()
-
-
