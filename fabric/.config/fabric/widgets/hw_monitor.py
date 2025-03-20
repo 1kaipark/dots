@@ -17,6 +17,76 @@ import psutil
 
 from utils.weather import WEATHER_CODES
 
+# https://github.com/Titaniumtown/pyfetch/blob/master/pyfetch.py
+import os
+from subprocess import Popen, PIPE, DEVNULL
+
+
+def run_command(command):
+    process = Popen(
+        command, stdout=PIPE, universal_newlines=True, shell=True, stderr=DEVNULL
+    )
+    stdout, stderr = process.communicate()
+    del stderr
+    return stdout
+
+
+def get_os_name() -> str:
+    if os.path.isfile("/etc/os-release"):
+        os_file = "/etc/os-release"
+
+    pretty_name = (
+        run_command(("cat " + os_file + " | grep 'PRETTY_NAME'"))
+        .replace("PRETTY_NAME=", "")
+        .replace('''"''', "")
+    )
+    return pretty_name.strip()
+
+
+class Fetch(Box):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(orientation="v", v_expand=True, v_align="center", **kwargs)
+
+        self.os_label = Label(name="label-a")
+        self.uptime_label = Label(name="label-b")
+        self.pkg_label = Label(name="label-c")
+        self.disk_label = Label(name="label-d")
+
+        for label in [
+            self.os_label,
+            self.uptime_label,
+            self.pkg_label,
+            self.disk_label,
+        ]:
+            self.add(label)
+
+        self.update_status()
+
+    def update_status(self) -> bool:
+        os = get_os_name().strip().lower()
+        self.os_label.set_label(f"os • {os}")
+
+        uptime_fabricator = Fabricator(
+            interval=500,
+            poll_from=get_relative_path("../scripts/uptime.sh"),
+            on_changed=lambda f, v: self.uptime_label.set_label(
+                f"up • {v}"
+            ),
+        )
+
+        pkgs_fabricator = Fabricator(
+            interval=5000,
+            poll_from=get_relative_path("../scripts/package_count.sh"),
+            on_changed=lambda f, v: self.pkg_label.set_label(f"pkgs • {v}"),
+        )
+
+        df_fabricator = Fabricator(
+            interval=5000,
+            poll_from=get_relative_path("../scripts/disk_usage.sh"),
+            on_changed=lambda f, v: self.disk_label.set_label(f"df • {v}"),
+        )
+        
+
 class HWMonitor(Box):
     def __init__(self, **kwargs) -> None:
         super().__init__(orientation="h", **kwargs)
@@ -50,25 +120,7 @@ class HWMonitor(Box):
         self.add(progress_grid)
 
         self.add(Separator())
-
-        weather_widgets = []
-        self.weather_temp_label = Label(
-            name="weather-temp",
-            label="⛅️°C",
-        )
-
-        # self.weather_desc_label = DynamicLabel(name="weather-desc", label="Weather", max_len=15, independent_repeat=True)
-
-        self.weather_desc_label = Gtk.Label(name="weather-desc", label="weather")
-        self.weather_desc_label.set_line_wrap(True)
-        self.weather_desc_label.set_max_width_chars(18)
-
-        weather_widgets.append(self.weather_temp_label)
-        weather_widgets.append(self.weather_desc_label)
-
-        weather = Box(children=weather_widgets, orientation="v")
-
-        self.add(weather)
+        self.add(Fetch())
 
     def update_status(self) -> bool:
         cpu_percent = int(psutil.cpu_percent())
@@ -96,27 +148,4 @@ class HWMonitor(Box):
         self.cpu_temp_progress_bar.progress_bar.value = cpu_temp / 100
         self.cpu_temp_progress_bar.label.set_label(str(cpu_temp) + "°C")
 
-        weather_fabricator = Fabricator(
-            interval=3600*1000*4,
-            poll_from=get_relative_path("../scripts/fetch_weather.sh"),
-            on_changed=self.update_weather_display,
-        )
-
-#        cpu_boost_fabricator = Fabricator(
-#            interval=1000,
-#            poll_from=get_relative_path("../scripts/hw_mon.sh"),
-#            on_changed=lambda f, v: (self.cpu_temp_progress_bar.icon.set_label(Icons.BOOST.value)) if v==0 else (self.cpu_temp_progress_bar.icon.set_label(Icons.TEMP.value))
-#        )
-#
-        # curr_weather = fetch_weather()
-        return 1
-
-    def update_weather_display(self, f, v):
-        code, temp_C, desc = v.split("|")
-        try:
-            icon = WEATHER_CODES[code]
-        except KeyError:
-            1
-        self.weather_temp_label.set_label(icon + " " + temp_C + "°C")
-        self.weather_desc_label.set_label(desc)
 

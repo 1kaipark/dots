@@ -15,7 +15,7 @@ from widgets.clock import Clock
 from widgets.power_menu import PowerMenu
 from widgets.hw_monitor import HWMonitor
 from widgets.controls import Controls
-from widgets.fetch import Fetch
+from widgets.weather import Weather
 from widgets.launchers import Launchers 
 from widgets.quote_display import QuoteDisplay
 from widgets.network_controls import NetworkControls
@@ -98,7 +98,7 @@ class ControlCenter(Window):
         self.controls = Controls(name="controls")  # sliders for vol, brightness
         self.calendar = CalendarWidget(name="calendar-widget")
 
-        self.fetch = Fetch(name="fetch")  # idea: cool neofetch polling
+        self.weather = Weather(name="weather")  # idea: cool neofetch polling
 
         self.media = NowPlaying(
             name="inner-box", max_len=20, cava_bars=22
@@ -143,7 +143,7 @@ class ControlCenter(Window):
         )
         self.quote_display = QuoteDisplay(name="quote-display")
         self.row_4 = Box(
-            orientation="h", children=[self.fetch, self.quote_display], name="outer-box"
+            orientation="h", children=[self.weather, self.quote_display], name="outer-box"
         )
 
 
@@ -163,6 +163,7 @@ class ControlCenter(Window):
 
     def update_status(self) -> bool:
         self.hwmon.update_status()
+        self.weather.update_status()
         return 1
 
 

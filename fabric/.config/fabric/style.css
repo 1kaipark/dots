@@ -51,7 +51,7 @@
     background-size: 400% 400%;
     font-size: 33px;
     color: @overlay0;
-    margin: 0 8px;
+    margin: 0 9px;
 }
 #button-icon:hover label {
     color: @red;
@@ -201,9 +201,11 @@
     color: alpha(@subtext1, 0.1);
 }
 
+#weather {
+    margin: 12px;
+}
 #weather-temp {
     font-size: 18px;
-    margin-top: 16px;
 }
 
 #weather-desc {
@@ -273,7 +275,6 @@
 
 #fetch {
     min-width: 30px;
-    margin: 12px;
 }
 
 #launchers {
@@ -348,8 +349,9 @@ window#bar {
 }
 
 #bar #bar-icon label {
-    font-size: 20px;
+    font-size: 18px;
 }
+
 #bar {
     all: unset;
     border: none;
@@ -357,7 +359,7 @@ window#bar {
     font-family: "GeistMono Nerd Font";
     padding: 3px 6px 6px 0px;
     border-radius: 16px;
-    background-color: alpha(@crust, 0.9);
+    background-color: var(--bg);
     text-shadow: none;
 }
 #bar label {
@@ -392,7 +394,7 @@ window#bar {
 /* Workspaces */
 #bar #workspaces {
     border-radius: 6px;
-    background-color: @base;
+    background-color: var(--module-bg);
     margin-top: 6px;
 }
 
@@ -448,7 +450,7 @@ window#bar {
 /* system tray */
 #bar #system-tray {
     border-radius: 6px;
-    background-color: @base;
+    background-color: var(--module-bg);
     margin-top: 6px;
 }
 menu {
