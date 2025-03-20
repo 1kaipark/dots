@@ -122,7 +122,20 @@ class ControlCenter(Window):
         )
 
         self.row_1 = Box(orientation="h", children=[self.hwmon], name="outer-box")
-        self.row_2 = Box(orientation="h", children=[Box(orientation="v", children=[self.controls, self.media]), self.calendar], name="outer-box")
+        self.row_2 = Box(
+            orientation="h",
+            children=[
+                Box(
+                    orientation="v", 
+                    v_expand=True,
+                    v_align="center",
+                    children=[self.controls, self.media]
+                ), 
+
+                self.calendar
+            ], 
+            name="outer-box"
+        )
 #        self.row_3 = Box(
 #            orientation="h", children=[self.fetch], name="outer-box"
 #        )
