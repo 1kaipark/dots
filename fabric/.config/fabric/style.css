@@ -7,6 +7,7 @@
     --module-bg: alpha(@base, 0.7);
     --bg: alpha(@crust, 0.7); /* This looks like shit without blur*/
     --shadow: mix(@crust, #000000, 0.5);
+    --glow: lighter(@surface0);
 }
 
 * {
@@ -14,7 +15,7 @@
     color: var(--text);
     font-size: 14px;
     font-family: "GeistMono Nerd Font", sans-serif;
-    text-shadow: 8px 8px 12px var(--shadow);
+    text-shadow: 1px 1px 6px var(--shadow);
 }
 
 #window {
@@ -342,36 +343,63 @@ calendar:selected {
 }
 
 
-
-/* BAR CSS */ 
-window#bar {
-    border-radius: 20px;
+scrollbar {
+    background-color: @crust;
+    border-radius: 12px;
+    min-width: 4px;
+}
+slider {
+    background-color: @surface1;
+    border-radius: 12px;
+    min-width: 4px;
+}
+#todos button:hover label {
+    color: @red;
+}
+#todos #todos-scrollable {
+    min-height: 84px;
+    min-width: 460px;
+    border-radius: 6px;
+    background-color: @crust;
+    padding: 12px;
+}
+#todo-entry{ 
+    padding: 3px;
+    border-radius: 3px;
+    border: solid 1px @surface0;
+}
+#todos .done {
+    color: @surface0;
 }
 
+#todos checkbutton {
+    background-color: @crust;
+    border: 1px solid @text;
+}
+
+
+/* BAR CSS */ 
 #bar #bar-icon label {
     font-size: 18px;
 }
 
 #bar {
     all: unset;
-    border: none;
     font-size: 14px;
     font-family: "GeistMono Nerd Font";
     padding: 3px 6px 6px 0px;
-    border-radius: 16px;
+    border-radius: 18px;
     background-color: var(--bg);
-    text-shadow: none;
 }
 #bar label {
     color: @text;
-    background-color: transparent;
     padding: 0;
     margin: 0;
-    border-radius: 20px;
+    text-shadow: 1px 1px 6px var(--glow);
 }
 #bar button {
     padding: 0 12px;
-    background-color: transparent;
+    border-radius: 100%;
 }
 #bar button:hover label {
     color: @red;
@@ -382,15 +410,6 @@ window#bar {
     border-radius: 20px;
     background-color: transparent;
 }
-#bar #hyprland-window button:hover label {
-    color: @text;
-}
-#bar #h {
-    background-color: @red;
-}
-
-
-
 /* Workspaces */
 #bar #workspaces {
     border-radius: 6px;
@@ -483,37 +502,3 @@ menu>menuitem:hover label {
     background-color: var(--module-bg);
 }
 
-
-scrollbar {
-    background-color: @crust;
-    border-radius: 12px;
-    min-width: 4px;
-}
-slider {
-    background-color: @surface1;
-    border-radius: 12px;
-    min-width: 4px;
-}
-#todos button:hover label {
-    color: @red;
-}
-#todos #todos-scrollable {
-    min-height: 84px;
-    min-width: 460px;
-    border-radius: 6px;
-    background-color: @crust;
-    padding: 12px;
-}
-#todo-entry{ 
-    padding: 3px;
-    border-radius: 3px;
-    border: solid 1px @surface0;
-}
-#todos .done {
-    color: @surface0;
-}
-
-#todos checkbutton {
-    background-color: @crust;
-    border: 1px solid @text;
-}

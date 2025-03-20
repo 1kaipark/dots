@@ -9,6 +9,9 @@ from fabric.widgets.wayland import WaylandWindow as Window
 
 from fabric.utils import invoke_repeater
 
+from fabric import Application
+from fabric.utils import get_relative_path
+
 from widgets.media import NowPlaying
 from widgets.profile import Profile
 from widgets.clock import Clock
@@ -166,4 +169,13 @@ class ControlCenter(Window):
         self.weather.update_status()
         return 1
 
+    def toggle_visible(self) -> None:
+        self.set_visible(not self.is_visible())
 
+if __name__ == "__main__":
+    control_center = ControlCenter()
+    control_center.hide()
+    app = Application("control-center", control_center)
+    app.set_stylesheet_from_file(get_relative_path("./style.css"))
+
+    app.run()
