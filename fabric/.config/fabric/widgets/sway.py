@@ -62,19 +62,21 @@ class Workspaces(Box):
     def on_workspace(self, sway, event):
         match event.change:
             case "focus": 
-                self.highlight_button(id=int(event.current.num), old=int(event.old.num))
+#                self.highlight_button(id=int(event.current.num), old=int(event.old.num))
+                idle_add(self.highlight_button, (event))
             case "init": 
-                self.insert_button(id=int(event.current.num))
-                print("HUHHHHH")
+                idle_add(self.insert_button, (int(event.current.num)))
             case "empty":
-                self.remove_button(id=int(event.current.num))
+                idle_add(self.remove_button,  (int(event.current.num)))
 
 
     def load_workspaces(self):
-        open_workspaces: tuple[int, ...] = tuple(
-            int(ws.num)
-            for ws in self.sway.get_workspaces()
-        )
+        open_workspaces: tuple[int, ...] = sorted(
+                tuple(
+                    int(ws.num)
+                    for ws in self.sway.get_workspaces()
+                )
+            )
 
         for ws in open_workspaces:
             btn = WorkspaceButton(id=ws, icons=WS_ICONS, name="workspaces-button")
@@ -83,10 +85,11 @@ class Workspaces(Box):
             self._container.add(btn)
 
         if active_workspace := self.sway.get_tree().find_focused().workspace().num:
-            self.highlight_button(active_workspace)
+            self.buttons[active_workspace].add_style_class("active")
 
 
     def insert_button(self, id: int):
+        logger.info("[Workspaces] Inserting workspace {}".format(str(id)))
         btn = WorkspaceButton(id=id, icons=WS_ICONS, name="workspaces-button")
         btn.connect("clicked", self.on_button_press)
 
@@ -96,6 +99,7 @@ class Workspaces(Box):
         self.reorder_buttons()
 
     def remove_button(self, id: int):
+        logger.info("[Workspaces] Removing workspace {}".format(str(id)))
         self.buttons[id].destroy()
         self.buttons.pop(id)
 
@@ -104,11 +108,15 @@ class Workspaces(Box):
             self._container.reorder_child(child, (int(child.id) - 1))
         return
 
-    def highlight_button(self, id: int, old: int | None = None):
+    def highlight_button(self, event):
+        id = int(event.current.num)
+        old = int(event.old.num)
+        logger.info("[Workspaces] Active workspace {}".format(str(id)))
         self.buttons[id].add_style_class("active")
         if old:
             self.buttons[old].remove_style_class("active")
 
     def on_button_press(self, button):
+        logger.info("[Workspaces] Active workspace {}".format(str(id)))
         self.sway.command(f"workspace {button.id}")
         
