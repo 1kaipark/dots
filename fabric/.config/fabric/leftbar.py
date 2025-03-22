@@ -21,6 +21,7 @@ from user.icons import Icons
 from user.commands import Commands
 from widgets.battery_single import BatterySingle
 from widgets.systray import SystemTray
+from widgets.calendar import CalendarWindow
 
 class StatusBar(Window):
     def __init__(
@@ -28,7 +29,7 @@ class StatusBar(Window):
     ):
         super().__init__(
             name="bar",
-            title="top-left-bar",
+            title="left-bar",
             layer="top",
             anchor="top left bottom left",
             margin="10px 0px 10px 15px", # top right bottom left
@@ -40,13 +41,16 @@ class StatusBar(Window):
         self.start_menu = Button(
 #            label=" ", 
             label=Icons.SEND.value,
-            on_clicked=self.show_panel,
+            on_clicked=self.show_control_center,
             name="bar-icon",
             style="margin: 15px 10px 10px 5px;",  # to center the icon glyph
         )
 
         self.control_center = ControlCenter()
         self.control_center.hide()
+
+        self.calendar_window = CalendarWindow(name="window")
+        self.calendar_window.hide()
 
         self.workspaces = Workspaces(
              name="workspaces",
@@ -60,15 +64,14 @@ class StatusBar(Window):
 
         self.system_tray = Box(name="system-tray", children=[SystemTray(pixel_size=18)], h_align="center")
 
-        self.date_time = Box(
-            orientation="v",
-            name="bar-clock",
-            children=[
-                DateTime(style_classes="time-hour", formatters=("%H")),
-                Label(label="-", style_classes="time-separator"),
-                DateTime(style_classes="time-min", formatters=("%M")),
 
-            ]
+        self.date_time = DateTime(
+            style_classes="bar-clock",
+            formatters=("%H\n%M")
+        )
+        self.date_time.connect(
+            "clicked",
+            self.show_calendar_window
         )
 
         self.notification_button = Button(
@@ -120,8 +123,13 @@ class StatusBar(Window):
 
         self.show_all()
 
-    def show_panel(self, *_):
+    def show_control_center(self, *_):
         self.control_center.set_visible(not self.control_center.is_visible())
+        self.calendar_window.hide()
+
+    def show_calendar_window(self, *_):
+        self.calendar_window.set_visible(not self.calendar_window.is_visible())
+        self.control_center.hide()
 
     def toggle_notifications(self, *_):
         exec_shell_command_async(Commands.NOTIFICATIONS.value)

@@ -1,4 +1,4 @@
-from fabric.widgets.box import Box 
+from fabric.widgets.box import Box
 from fabric.widgets.label import Label
 
 from fabric import Fabricator
@@ -9,7 +9,8 @@ from widgets.circular_indicator import CircularIndicator
 from widgets.separator import Separator
 from user.icons import Icons
 
-import gi 
+import gi
+
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
@@ -18,7 +19,7 @@ import psutil
 from utils.weather import WEATHER_CODES
 
 # https://github.com/Titaniumtown/pyfetch/blob/master/pyfetch.py
-import os
+import os, time
 from subprocess import Popen, PIPE, DEVNULL
 
 
@@ -31,121 +32,86 @@ def run_command(command):
     return stdout
 
 
-def get_os_name() -> str:
-    if os.path.isfile("/etc/os-release"):
-        os_file = "/etc/os-release"
+class Indicator(Box):
+    def __init__(self, icon: str, **kwargs):
+        super().__init__(orientation="v", **kwargs)
 
-    pretty_name = (
-        run_command(("cat " + os_file + " | grep 'PRETTY_NAME'"))
-        .replace("PRETTY_NAME=", "")
-        .replace('''"''', "")
-    )
-    return pretty_name.strip()
+        self.icon = Label(label=icon)
+        self.label = Label()
 
+        self.add(self.icon)
+        self.add(self.label)
 
-class Fetch(Box):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(orientation="v", v_expand=True, v_align="center", **kwargs)
-
-        self.os_label = Label(name="label-a")
-        self.uptime_label = Label(name="label-b")
-        self.pkg_label = Label(name="label-c")
-        self.disk_label = Label(name="label-d")
-
-        for label in [
-            self.os_label,
-            self.uptime_label,
-            self.pkg_label,
-            self.disk_label,
-        ]:
-            self.add(label)
-
-        self.update_status()
-
-    def update_status(self) -> bool:
-        os = get_os_name().strip().lower()
-        self.os_label.set_label(f"os • {os}")
-
-        uptime_fabricator = Fabricator(
-            interval=500,
-            poll_from=get_relative_path("../scripts/uptime.sh"),
-            on_changed=lambda f, v: self.uptime_label.set_label(
-                f"up • {v}"
-            ),
-        )
-
-        pkgs_fabricator = Fabricator(
-            interval=5000,
-            poll_from=get_relative_path("../scripts/package_count.sh"),
-            on_changed=lambda f, v: self.pkg_label.set_label(f"pkgs • {v}"),
-        )
-
-        df_fabricator = Fabricator(
-            interval=5000,
-            poll_from=get_relative_path("../scripts/disk_usage.sh"),
-            on_changed=lambda f, v: self.disk_label.set_label(f"df • {v}"),
-        )
-        
 
 class HWMonitor(Box):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(orientation="h", **kwargs)
+    @staticmethod
+    def psutil_poll(f: Fabricator):
+        ram = psutil.virtual_memory()
+        disk = psutil.disk_usage("/")
+        while 1:
+           yield {
+               "cpu_usage": int(psutil.cpu_percent()),
+               "cpu_temp": int(psutil.sensors_temperatures()["thinkpad"][0].current),
+               "ram_percent": (ram.percent / 100),
+               "ram_usage": (ram.total - ram.available) / (1024**3),
+               "disk_percent": disk.percent / 100,
+               "disk_usage": disk.used / (1024**3),
+           }
 
-        self.battery_progress_bar = CircularIndicator(
-            name="battery",
-            icon=Icons.BAT.value,
-        )
+           time.sleep(1)
+
+    cool_fabricator = Fabricator(poll_from=psutil_poll, stream=True, default_value={})
+
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__(orientation="h", h_align="center", h_expand=True, **kwargs)
 
         self.cpu_progress_bar = CircularIndicator(
-            name="cpu",
+            name="hwmon-item",
+            style_classes="blue",
             icon=Icons.CPU.value,
         )
 
         self.ram_progress_bar = CircularIndicator(
-            name="ram",
+            name="hwmon-item",
+            style_classes="yellow",
             icon=Icons.MEM.value,
         )
 
         self.cpu_temp_progress_bar = CircularIndicator(
-            name="temp",
+            name="hwmon-item",
+            style_classes="red",
             icon=Icons.TEMP.value,
         )
 
-        progress_grid = Gtk.Grid()
-        progress_grid.attach(self.battery_progress_bar, 0, 0, 1, 1)
-        progress_grid.attach(self.cpu_progress_bar, 1, 0, 1, 1)
-        progress_grid.attach(self.ram_progress_bar, 2, 0, 1, 1)
-        progress_grid.attach(self.cpu_temp_progress_bar, 3, 0, 1, 1)
-
-        self.add(progress_grid)
-
-        self.add(Separator())
-        self.add(Fetch())
-
-    def update_status(self) -> bool:
-        cpu_percent = int(psutil.cpu_percent())
-        self.cpu_progress_bar.progress_bar.value = cpu_percent / 100
-        self.cpu_progress_bar.label.set_label(str(cpu_percent) + "%")
+        self.disk_progress_bar = CircularIndicator(
+            name="hwmon-item",
+            style_classes="green",
+            icon=Icons.DISK.value, 
+        )
         
-        ram = psutil.virtual_memory()
-        ram_usage = (ram.total - ram.available)/(1024**3)
-        self.ram_progress_bar.progress_bar.value = ram.percent / 100
-        self.ram_progress_bar.label.set_label(f"{ram_usage:.1f} GB")
+        self._container = Box(h_align="fill", h_expand=True, spacing=36)
+        self._container.add(self.cpu_progress_bar)
+        self._container.add(self.cpu_temp_progress_bar)
+        self._container.add(self.ram_progress_bar)
+        self._container.add(self.disk_progress_bar)
+        
+        self.add(self._container)
+        
+        self.cool_fabricator.connect(
+            "changed",
+            self.update_status
+        )
 
-        if not (bat_sen := psutil.sensors_battery()):
-            self.battery_progress_bar.progress_bar.value = 0.42
-            self.battery_progress_bar.label.set_label("INF%")
-        else:
-            if psutil.sensors_battery().power_plugged:
-                self.battery_progress_bar.icon.set_label(Icons.CHARGING.value)
-            else:
-                self.battery_progress_bar.icon.set_label(Icons.BAT.value)
-            self.battery_progress_bar.progress_bar.value = bat_sen.percent / 100
-            self.battery_progress_bar.label.set_label(str(int(bat_sen.percent)) + "%")
-
-
-        cpu_temp = int(psutil.sensors_temperatures()["thinkpad"][0].current)
-        self.cpu_temp_progress_bar.progress_bar.value = cpu_temp / 100
-        self.cpu_temp_progress_bar.label.set_label(str(cpu_temp) + "°C")
-
-
+    def update_status(self, f: Fabricator, value: dict):
+        self.cpu_progress_bar.progress_bar.set_value(value['cpu_usage']/100)
+        self.cpu_progress_bar.label.set_label(str(value['cpu_usage'])+"%")
+        
+        self.cpu_temp_progress_bar.progress_bar.set_value(value['cpu_temp']/100)
+        self.cpu_temp_progress_bar.label.set_label(str(value['cpu_temp'])+"°C")
+        
+        self.ram_progress_bar.progress_bar.set_value(value['ram_percent'])
+        self.ram_progress_bar.label.set_label(f"{value['ram_usage']:.1f}GB")
+        
+        self.disk_progress_bar.progress_bar.set_value(value['disk_percent'])
+        self.disk_progress_bar.label.set_label(f"{value['disk_usage']:.0f}GB")

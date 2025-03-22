@@ -10,9 +10,12 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
-class PowerMenu(Gtk.Grid):
+class PowerMenu(Gtk.Box):
     def __init__(self, **kwargs) -> None:
         super().__init__(orientation=Gtk.Orientation.HORIZONTAL, **kwargs)
+        self.set_halign(Gtk.Align.CENTER)
+        self.set_hexpand(True)
+        self.set_spacing(48)
 
         self.logout = Button(
             name="button-icon",
@@ -58,4 +61,3 @@ class PowerMenu(Gtk.Grid):
         self.add(self.shutdown)
         self.add(self.wallpaper_switch)
 
-        self.set_column_spacing(18)

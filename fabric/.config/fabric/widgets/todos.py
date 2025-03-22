@@ -37,6 +37,7 @@ class TodoItem(Box):
         self.checkbox = Gtk.CheckButton(active=self._done)
         self.label = Gtk.Label(label=todo_text, xalign=0, name="todo-label")
         self.label.set_xalign(0)
+        self.label.set_max_width_chars(20)
 
         if self._done:
             self.label.get_style_context().add_class("done")
@@ -106,6 +107,8 @@ class Todos(Box):
 
         # Scrolled window for the todo list
         self.scrolled_window = Gtk.ScrolledWindow(name="todos-scrollable")
+        if size := kwargs['size']:
+            self.scrolled_window.set_size_request(*size)
         self.scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         vbox.pack_start(self.scrolled_window, True, True, 0)
 

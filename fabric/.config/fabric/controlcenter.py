@@ -12,7 +12,7 @@ from fabric.utils import invoke_repeater
 from fabric import Application
 from fabric.utils import get_relative_path
 
-from widgets.media import NowPlaying
+from widgets.media import MediaWidget
 from widgets.profile import Profile
 from widgets.clock import Clock
 from widgets.power_menu import PowerMenu
@@ -88,82 +88,43 @@ class ControlCenter(Window):
         #   \ V  V /  | || |_| | |_| | |___  | |  ___) |
         #    \_/\_/  |___|____/ \____|_____| |_| |____/
         #
-        self.network_controls = NetworkControls(name="network-controls")
-        self.network_controls_box = Box(name="outer-box", children=[self.network_controls])
-        self.profile = Profile(name="outer-box")
+        self.profile = Profile(name="profile")
 
-        self.power_menu = PowerMenu()
-
-        self.clock = Clock()
 
         self.hwmon = HWMonitor(name="hw-mon")  # this goes in center_widgets
 
-        self.controls = Controls(name="controls")  # sliders for vol, brightness
-        self.calendar = CalendarWidget(name="calendar-widget")
+        self.controls = Controls(name="controls", size=(300, -1))  # sliders for vol, brightness
 
-        self.weather = Weather(name="weather")  # idea: cool neofetch polling
+        self.power_menu = PowerMenu()
+        self.media = MediaWidget(name="media")
 
-        self.media = NowPlaying(
-            name="inner-box", max_len=20, cava_bars=22
-        )  
-        
-        self.launchers = Launchers(name="launchers")
-
-
-        self.top_right = Box(
-            children=[self.power_menu, self.clock],
-            orientation="v",
-            name="outer-box"
-        )
-
-        self.header = Box(
-            orientation="h",
-            children=[self.network_controls_box, self.profile, self.top_right],
-        )
-
+        self.header = Box(orientation="h", children=[self.profile])
         self.row_1 = Box(orientation="h", children=[self.hwmon], name="outer-box")
         self.row_2 = Box(
             orientation="h",
             children=[
-                Box(
-                    orientation="v", 
-                    v_expand=True,
-                    v_align="center",
-                    children=[self.controls, self.media]
-                ), 
-
-                self.calendar
+                self.controls
             ], 
             name="outer-box"
         )
 #        self.row_3 = Box(
 #            orientation="h", children=[self.fetch], name="outer-box"
 #        )
-#        self.row_4 = Box(
-#            orientation="h", children=[self.launchers], name="outer-box"
-#        )
-
-        self.calendar = Gtk.Calendar(
-            visible=True,
-            hexpand=True,
-            halign=Gtk.Align.CENTER,
+        self.row_4 = Box(
+            orientation="h", children=[self.power_menu], name="outer-box"
         )
 
-#        self.notis = Box(
-#            orientation="h", children=[NotificationCenter(name="notification-center")], name="outer-box", h_expand=True
-#        )
-        
-        self.todos = Todos(name="todos", h_expand=True, size=(-1, 120))
+        self.todos = Todos(name="todos", h_expand=True, size=(366, 120))
         self.row_3 = Box(
             orientation="h", children=[self.todos], name="outer-box", h_expand=True
         )
-        self.quote_display = QuoteDisplay(name="quote-display")
-        self.row_4 = Box(
-            orientation="h", children=[self.weather, self.quote_display], name="outer-box"
+        
+        self.row_5 = Box(
+            orientation="h", children=[self.media], name="outer-box", h_expand=True
         )
+        
 
-
-        self.widgets = [self.header, self.row_1, self.row_2, self.row_3, self.row_4]
+        self.widgets = [self.header, self.row_1, self.row_2, self.row_3, self.row_4, self.row_5]
 
         self.add(
             Box(
@@ -175,19 +136,11 @@ class ControlCenter(Window):
         )
         self.show_all()
 
-        invoke_repeater(2000, self.update_status)
-
-    def update_status(self) -> bool:
-        self.hwmon.update_status()
-        self.weather.update_status()
-        return 1
-
     def toggle_visible(self) -> None:
         self.set_visible(not self.is_visible())
 
 if __name__ == "__main__":
     control_center = ControlCenter()
-    control_center.hide()
     app = Application("control-center", control_center)
     app.set_stylesheet_from_file(get_relative_path("./style.css"))
 

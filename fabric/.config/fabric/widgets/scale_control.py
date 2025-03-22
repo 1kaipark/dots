@@ -10,9 +10,10 @@ class ScaleControl(Box):
         max_value: int = 100,
         initial_value: int = 100,
         orientation = "h",
+        size: tuple[int, int] = (-1, -1),
         **kwargs,
     ) -> None:
-        super().__init__(orientation=orientation, **kwargs)
+        super().__init__(orientation=orientation, size=size, **kwargs)
         self.scale = Scale(
             min_value=0,
             max_value=max_value,
@@ -22,6 +23,7 @@ class ScaleControl(Box):
             v_align="start",
             h_align="start",
         )
+        self.scale.set_size_request(*size)
         self.label = Button(
             label=label,
             on_clicked=button_callback

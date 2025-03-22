@@ -1,188 +1,233 @@
-from fabric import Application, Fabricator
+from fabric import Fabricator
 
-from fabric.widgets.wayland import WaylandWindow as Window
-
-from fabric.widgets.button import Button 
-from fabric.widgets.label import Label 
+from fabric.widgets.button import Button
 from fabric.widgets.box import Box
-from fabric.widgets.centerbox import CenterBox
+from fabric.widgets.label import Label
+from fabric.widgets.scale import Scale
 
-from fabric.widgets.image import Image 
+from fabric.widgets.image import Image
 
-from fabric.utils import exec_shell_command_async, get_relative_path, invoke_repeater
+from fabric.utils import exec_shell_command_async, get_relative_path
 
-from widgets.cava import CavaWidget 
 from widgets.dynamic_label import DynamicLabel
 
-import gi 
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gio, GLib
-
+import json
 import os
-
 from loguru import logger
 
-now_playing_fabricator = Fabricator(poll_from=r"playerctl -F metadata --format '{{album}}\n{{artist}}\n{{status}}\n{{title}}\n{{volume}}\n{{mpris:artUrl}}\n'", stream=True)
+import tempfile
+import urllib.parse
+import urllib.request
+from gi.repository import GLib, Gtk
 
-class Spacer(Label):
-    def __init__(self, n_spaces: int = 1, **kwargs):
-        super().__init__(label=" "*n_spaces)
+from enum import Enum
+class MediaIcons(Enum):
+    PREV = Image(icon_name="media-seek-backward-symbolic", name="icon")
+    NEXT = Image(icon_name="media-seek-forward-symbolic", name="icon")
+    PLAYING = Image(icon_name="media-playback-pause-symbolic", name="icon")
+    PAUSED = Image(icon_name="media-playback-start-symbolic", name="icon")
+    STOPPED = Image(icon_name="media-playback-stop-symbolic", name="icon")
+    
+from user.icons import Icons
+    
 
-class NowPlaying(Box):
-    def __init__(self, max_len: int = 25, cava_bars: int = 12, **kwargs):
-        self._status: str = "" 
-
-        self.max_len = max_len 
-
-        self.label = DynamicLabel(
-            label="not playing",
-            max_len=max_len,
-            independent_repeat=True,
-            refresh_rate=500,
-        )
-
-
-        self.title_box = Box(
-            children=[
-                self.label,CavaWidget(name="cava-box", bars=cava_bars),
-            ],
-            orientation='v',
-            name="media-title"
-        )
-        
-        prev_icon = Image(icon_name="media-seek-backward-symbolic", name="icon")
-        self.prev_button = Button(
-            child=prev_icon,
-            on_clicked=self.prev_track
-        )
-
-        self.status_label = Image(icon_name="media-playback-start-symbolic", name="icon")
-        self.play_pause_button = Button(child=self.status_label, on_clicked=self.toggle_play)
-
-        next_icon = Image(icon_name="media-seek-forward-symbolic", name="icon")
-        self.next_button = Button(child=next_icon, on_clicked=self.next_track)
-
-        self.controls = CenterBox(
-            start_children=[self.prev_button],
-            center_children=[self.play_pause_button],
-            end_children=[self.next_button],
-            orientation="v",
-            name="media-controls"
-        )
-        
-        self.cover_path = GLib.get_user_cache_dir() + "/coverart.jpg"
+def timestamp_to_sec(timestamp: str, delimiter: str = ":") -> int:
+    ts = timestamp.split(delimiter)
+    match len(ts):
+        case 2:
+            m, s = ts[0], ts[1]
+            return int(m) * 60 + int(s)
+        case 3:
+            h, m, s = ts[0], ts[1], ts[2]
+            return int(h) * 60 * 60 + int(m) * 60 + int(s)
 
 
-        super().__init__(children=[self.title_box, self.controls], orientation="h", **kwargs)
-        
-        self.title_box.set_style(
-                'background-image: none;'
-        )
-        
-        now_playing_fabricator.connect("changed", lambda *args: self.update_label_and_icon(*args))
-
-        self.art_path = os.path.join(
-            os.getenv('HOME'),
-            '.cache', 'hhhh', 'cover.png'
-        )
-
-    def update_label_and_icon(self, fabricator, value):
-        if value:
-            self.label.replace_text(self.find_title(value))
-            self.status_label.set_from_icon_name(self.find_icon(value))
-            self._status = value.split(r"\n")[2]
-            art_url = value.split(r"\n")[5]
-
-            if self._status == "Playing":
-                self.label.scrolling = True
-            else:
-                self.label.scrolling = False
-                
-                
-            exec_shell_command_async(
-                get_relative_path("../scripts/music.sh get"),
-            )
-            
-            # I love lambda spaghetti
-            invoke_repeater(1000, lambda *_: self.update_art(*_) if art_url != "" else self.remove_art())
-            
-            logger.info(self._status)
-            
-        else:
-            self._status = "Stopped"
-            self.status_label.set_from_icon_name("media-playback-start-symbolic")
-            self.label.replace_text("not playing")
-            self.remove_art()
-
-    def update_art(self, *_):
-        logger.info("Update art")
-        if self._status == "Stopped":
-            logger.info("Nvm, nothing is playing")
-            return
-        self.title_box.set_style(
-            f"background-image: url('file://{self.art_path}'); background-size: cover;"
-        )
-    def remove_art(self, *_):
-        print("remove")
-        logger.info("Removing artwork...")
-        pic = "/home/kai/Pictures/wall/tokyonight_catppuccin_frappe_archpc_gruvbox.jpg"
-        self.title_box.set_style(
-            f"background-image: none; background-size: cover;"
-        )
-
-    @staticmethod
-    def find_title(value):
-        try:
-            album, artist, status, title, volume, art_url, *_ = value.split(r"\n")
-            return (
-                f"{artist} - {title}" if album  # if its jellyfin
-                else f"{artist.replace(" - Topic", "")} - {title}" if artist.endswith(" - Topic")  # if its youtube and artist/channel name has "topic"
-                else title
-            )
-
-        except ValueError as e:
-            return ""
-
-    @staticmethod
-    def find_icon(value):
-        icon_dict = {
-            "Stopped": "media-playback-pause-symbolic",
-            "Paused": "media-playback-start-symbolic",
-            "Playing": "media-playback-pause-symbolic",
-        }
-        try:
-            return icon_dict[value.split(r"\n")[2]]
-        except IndexError:
-            return ""
-
-    def update_image(self): 
-        print("Okay")
-
-
-    def toggle_play(self, *args):
-        if self._status == "Playing":
-            exec_shell_command_async("playerctl pause")
-        else:
-            exec_shell_command_async("playerctl play")
-
-
-    def prev_track(self, *_):
-        exec_shell_command_async("playerctl previous")
-
-    def next_track(self, *_):
-        exec_shell_command_async("playerctl next")
-
-
-
-if __name__ == "__main__":
-    box = Box(
-        children=[
-            Box(child=Label(label="hello")),
-            NowPlaying(),
-        ]
+class MediaWidget(Box):
+    # JSON fabricator from https://github.com/SlumberDemon/dotfiles/tree/spacerice/.config/fabric/widgets
+    media_fabricator = Fabricator(
+        poll_from='playerctl -F metadata --format  \'{"status": "{{status}}", "artUrl": "{{mpris:artUrl}}", "title": "{{ markup_escape(title) }}", "artist": "{{ markup_escape(artist) }}"}\'',
+        stream=True,
+    )
+    media_time_fabricator = Fabricator(
+        poll_from='playerctl -F metadata --format  \'{"position": "{{ duration(position) }}", "duration": "{{ duration(mpris:length) }}"}\'',
+        stream=True,
     )
 
-    window = Window(child=box)
-    app = Application("hi", window)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    app.run()
+        self._status = "Stopped"
+        self._duration: int = 0
+
+        self.art_box = Box(name="player-art")
+        self.title_label = Label(label="not playing", style_classes="title")
+        self.artist_label = Label(label="", style_classes="artist")
+
+        self.artist_label.set_max_width_chars(10)
+        self.title_label.set_max_width_chars(10)
+
+        self.artist_label.set_line_wrap(True)
+        self.title_label.set_line_wrap(True)
+
+        self.position_label_temp = Label()
+
+        self.play_pause = Button(label=Icons.MEDIA_PLAY.value, style_classes="control-button")
+        self.next = Button(label=Icons.MEDIA_NEXT.value, style_classes="control-button")
+        self.prev = Button(label=Icons.MEDIA_PREV.value, style_classes="control-button")
+        
+        self.play_pause.connect(
+            "clicked",
+            self.toggle_play_pause
+        )
+        self.next.connect(
+            "clicked",
+            self.next_track
+        )
+        
+        self.prev.connect(
+            "clicked",
+            self.prev_track
+        )
+
+        self._container = Gtk.Grid()
+        self._labels = Box(orientation="v")
+
+        self._controls_buttons = Box(
+            orientation="h", h_align="center", h_expand=True, spacing=24
+        )
+        self._controls_buttons.add(self.prev)
+        self._controls_buttons.add(self.play_pause)
+        self._controls_buttons.add(self.next)
+
+        self._controls_progress = Box(orientation="h")
+        self.time_scale = Scale(value=0, name="media-scale", size=(196, -1))
+        self.position_label = Label(label="0:00", style_classes="timestamp")
+        self.duration_label = Label(label="0:00", style_classes="timestamp")
+
+        self._controls_progress.add(self.position_label)
+        self._controls_progress.add(self.time_scale)
+        self._controls_progress.add(self.duration_label)
+
+        self._controls_container = Box(orientation="v")
+
+        self._controls_container.add(self._controls_buttons)
+        self._controls_container.add(self._controls_progress)
+
+        self._container.attach(self.art_box, 0, 0, 1, 2)
+        self._labels.add(self.artist_label)
+        self._labels.add(self.title_label)
+        self._container.attach(self._labels, 1, 0, 1, 1)
+        self._container.attach(self._controls_container, 1, 1, 1, 1)
+
+        self.add(self._container)
+
+        self.media_fabricator.connect("changed", self.update_status)
+
+        self.media_time_fabricator.connect("changed", self.update_time)
+
+        self.time_scale.connect("button-release-event", self.on_scale_change)
+
+    def update_status(self, f: Fabricator, value: str):
+        logger.info("[Media] Updating metadata")
+        if not value:
+            self._status = "Stopped"
+            self.title_label.set_label("not playing")
+            self.artist_label.set_label("")
+            self.art_box.set_style(f"background-image: none;")
+            for label in [self.position_label, self.duration_label]:
+                label.set_label("0:00")
+            self.time_scale.set_value(0)
+            return
+
+        data = json.loads(value)
+        self.title_label.set_label(data["title"].strip())
+        self.artist_label.set_label(data["artist"].strip())
+        
+        self._status = data["status"]
+
+        if data[
+            "artUrl"
+        ]:  # https://github.com/Axenide/Ax-Shell/blob/main/modules/player.py
+            GLib.Thread.new(
+                "download-artwork", self._download_and_set_art, data["artUrl"]
+            )
+        print(self._status)
+            
+        match self._status:
+            case "Stopped":
+                logger.info("[Media] Now stopped")
+                self.play_pause.set_label(Icons.MEDIA_PLAY.value)
+            case "Paused":
+                logger.info("[Media] Now paused")
+                self.play_pause.set_label(Icons.MEDIA_PLAY.value)
+            case "Playing":
+                logger.info("[Media] Now playing")
+                self.play_pause.set_label(Icons.MEDIA_PAUSE.value)
+
+    def update_time(self, f: Fabricator, value: str):
+        if not value:
+            self._status = "Stopped"
+            return
+
+        data = json.loads(value)
+        position = data["position"]
+        duration = data["duration"]
+        position_sec, duration_sec = (
+            timestamp_to_sec(position),
+            timestamp_to_sec(duration),
+        )
+        self._duration = duration_sec
+        relative_position = position_sec / duration_sec
+
+        self.time_scale.set_value(relative_position)
+
+        self.position_label.set_label(position)
+        self.duration_label.set_label(duration)
+
+        logger.info("[Media] Seeking to {}".format(str(relative_position)))
+
+    def on_scale_change(self, *_):
+        new_pos = self.time_scale.value * self._duration
+        exec_shell_command_async(f"playerctl position {int(new_pos)}")
+
+    def _download_and_set_art(self, art_url: str):
+        try:
+            parsed = urllib.parse.urlparse(art_url)
+            suffix = os.path.splitext(parsed.path)[1] or ".png"
+            print(suffix)
+            with urllib.request.urlopen(art_url) as response:
+                data = response.read()
+
+            tmp = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+            tmp.write(data)
+            tmp.close()
+            local_arturl = tmp.name
+        except Exception as e:
+            logger.error("[Player] no art :( ? {}".format(str(e)))
+            local_arturl = None
+        GLib.idle_add(self._set_cover_image, local_arturl)
+
+    def _set_cover_image(self, image_path):
+        if image_path and os.path.isfile(image_path):
+            print(image_path)
+            self.art_box.set_style(f"background-image: url('file://{image_path}')")
+        else:
+            self.art_box.set_style(f"background-image: none;")
+            
+    def toggle_play_pause(self, *_): 
+        if self._status == "Playing":
+            logger.info("[Media] Pausing...")
+            exec_shell_command_async("playerctl pause")
+            self.play_pause.set_label(Icons.MEDIA_PLAY.value)
+        else:
+            logger.info("[Media] Playing...")
+            exec_shell_command_async("playerctl play")
+            self.play_pause.set_label(Icons.MEDIA_PAUSE.value)
+            
+    def next_track(self, *_): 
+        logger.info("[Media] Next track...")
+        exec_shell_command_async("playerctl next")
+        
+    def prev_track(self, *_): 
+        logger.info("[Media] Previous track...")
+        exec_shell_command_async("playerctl previous")

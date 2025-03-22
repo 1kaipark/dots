@@ -13,8 +13,10 @@ from user.icons import Icons
 from loguru import logger
 
 class Controls(Box):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(orientation="v", **kwargs)
+    def __init__(self, size: tuple[int, int] = (-1, -1), **kwargs) -> None:
+        super().__init__(orientation="v", size=size, **kwargs)
+
+
         self.audio = Audio(on_speaker_changed=self.on_speaker_changed)
         self.audio.connect("notify::speaker", self.on_speaker_changed)
 
@@ -23,12 +25,13 @@ class Controls(Box):
         self.volume_box = ScaleControl(
             label=Icons.VOL.value,
             name="scale-a",
-            button_callback=lambda *_: exec_shell_command_async("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle")
+            button_callback=lambda *_: exec_shell_command_async("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),
+            size=size,
         )
 
         self.volume_box.scale.connect("value-changed", self.change_volume)
 
-        self.brightness_box = ScaleControl(label=Icons.BRIGHTNESS.value, name="scale-b", max_value=255)
+        self.brightness_box = ScaleControl(label=Icons.BRIGHTNESS.value, name="scale-a", max_value=255, size=size)
 
         self.brightness_box.scale.connect(
             "change-value", self.update_brightness
@@ -78,7 +81,6 @@ class Controls(Box):
 
     def update_brightness(self, _, __, moved_pos):
         self.brightness.screen_brightness = moved_pos
-
 
     def on_brightness_changed(self, sender, value, *_):
         logger.info(sender.screen_brightness)

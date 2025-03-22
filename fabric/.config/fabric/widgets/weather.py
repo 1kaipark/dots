@@ -7,8 +7,26 @@ from fabric.utils import get_relative_path
 
 from utils.weather import WEATHER_CODES 
 
+import time
+import requests
 
 class Weather(Box):
+    @staticmethod
+    def weather_poll(f: Fabricator):
+        while 1:
+            weather_data = requests.get("https://wttr.in/?format=j1").json()['current_condition'][0]
+            code = weather_data['weatherCode']
+            temp_C = weather_data['temp_C']
+            desc = weather_data['weatherDesc'][0]['value']
+            yield {
+                "code": code,
+                "temp_C": temp_C,
+                "desc": desc,
+            }
+            time.sleep(1)
+
+    cool_fabricator = Fabricator(poll_from=weather_poll, stream=True, default_value={})
+
     def __init__(self, **kwargs) -> None:
         super().__init__(orientation="v", v_expand=True, v_align="center", **kwargs)
 
@@ -31,21 +49,15 @@ class Weather(Box):
         for child in weather_widgets:
             self.add(child)
 
-
-
-    def update_status(self) -> bool:
-        weather_fabricator = Fabricator(
-            interval=3600*1000*4,
-            poll_from=get_relative_path("../scripts/fetch_weather.sh"),
-            on_changed=self.update_weather_display,
+        self.cool_fabricator.connect(
+            "changed",
+            self.update_status
         )
 
-
-    def update_weather_display(self, f, v):
-        code, temp_C, desc = v.split("|")
+    def update_status(self, f: Fabricator, value: dict):
         try:
-            icon = WEATHER_CODES[code]
+            icon = WEATHER_CODES[value['code']]
         except KeyError:
             1
-        self.weather_temp_label.set_label(icon + " " + temp_C + "°C")
-        self.weather_desc_label.set_label(desc)
+        self.weather_temp_label.set_label(icon + " " + value['temp_C'] + "°C")
+        self.weather_desc_label.set_label(value['desc'])

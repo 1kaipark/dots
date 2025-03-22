@@ -32,6 +32,9 @@ class Icons(Enum):
     WIFI = "󰤨"
     BLUETOOTH = "󰂯"
     NOTIFICATIONS = ""
+    DISK = "󱛟"
+    STOPWATCH = ""
+    CALENDAR = "󰃭"
 
     
 
