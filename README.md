@@ -6,6 +6,8 @@
 * `./hypr/.config/hypr` - Hyprland config
 * Install the rest as you please
 
+* If you're looking for my vertical bar and control center, it's [https://github.com/1kaipark/GOBLiN](here)
+
 ## TODOS
 * TODO: dependency list and refactor
 * TODO: save some vertical space with the bar?
